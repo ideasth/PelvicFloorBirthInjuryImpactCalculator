@@ -279,6 +279,13 @@ cite{font-style:italic}
   .nav-tabs{display:none}
   .page-hero,.dash-hero{padding-left:var(--sp4);padding-right:var(--sp4)}
 }
+
+/* IOL Macrosomia Tab Responsive */
+@media(max-width:768px){
+  .iol-grid{grid-template-columns:1fr !important}
+  .iol-evidence-grid{grid-template-columns:1fr !important}
+  .sdm-grid{grid-template-columns:1fr !important}
+}
 </style>
 </head>
 <body>
@@ -299,6 +306,7 @@ cite{font-style:italic}
     <button class="nav-tab" onclick="showPage('education',this)" role="tab">Education</button>
     <button class="nav-tab" onclick="showPage('calculator',this)" role="tab">Risk Calculator</button>
     <button class="nav-tab" onclick="showPage('slides',this)" role="tab">📽 Slides Reference</button>
+    <button class="nav-tab" onclick="showPage('iol',this)" role="tab">🍼 IOL &amp; Macrosomia</button>
   </div>
   <button class="theme-btn" data-theme-toggle aria-label="Toggle dark mode">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
@@ -1403,5 +1411,648 @@ if(sbEl&&window.IntersectionObserver){
   </div>
 </div><!-- /page-slides -->
 
+<div id="page-iol" class="page">
+  <div style="max-width:var(--content-wide);margin:0 auto;padding:var(--sp6) var(--sp4)">
+
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,var(--surface) 0%,color-mix(in oklch,var(--gold-hl,#e9e0c6) 60%,var(--surface)) 100%);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--sp8);margin-bottom:var(--sp8)">
+      <div style="display:flex;align-items:center;gap:var(--sp4);margin-bottom:var(--sp4)">
+        <div style="font-size:2.5rem">🍼</div>
+        <div>
+          <h1 style="font-size:var(--tx-xl);font-weight:800;color:var(--text);margin-bottom:4px">Timing of Birth — IOL for Macrosomia</h1>
+          <p style="color:var(--text-muted);font-size:var(--tx-sm)">Shared decision-making tool: suspected large baby, maternal height, CPD risk & induction of labour</p>
+        </div>
+      </div>
+      <div style="background:color-mix(in oklch,var(--warning,#964219) 8%,var(--surface));border:1px solid color-mix(in oklch,var(--warning,#964219) 25%,var(--border));border-radius:var(--radius-lg);padding:var(--sp4);font-size:var(--tx-xs);color:var(--text-muted)">
+        <strong style="color:var(--text)">⚠️ Clinical information tool — not a substitute for individualised clinical assessment.</strong>
+        Evidence from Big Baby Trial (Lancet 2025, n=2,893) · Al-Qudah et al. meta-analysis (BMC Pregnancy 2026, n=3,984) · Swedish population cohort (n=581,844) · ACOG/NICE/RCOG guidelines.
+      </div>
+    </div>
+
+    <!-- Interactive Calculator -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp6);margin-bottom:var(--sp8)" class="iol-grid">
+
+      <!-- Left: Inputs -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--sp6)">
+        <h2 style="font-size:var(--tx-lg);font-weight:700;color:var(--text);margin-bottom:var(--sp5)">📋 Patient Parameters</h2>
+
+        <!-- Maternal Height -->
+        <div style="margin-bottom:var(--sp5)">
+          <label style="display:block;font-size:var(--tx-sm);font-weight:600;color:var(--text);margin-bottom:var(--sp2)">Maternal Height</label>
+          <div style="display:flex;gap:var(--sp2);align-items:center">
+            <input type="range" id="iol-height" min="140" max="185" value="163" step="1"
+              style="flex:1;accent-color:var(--primary)"
+              oninput="document.getElementById('iol-height-val').textContent=this.value+' cm';updateIOL()">
+            <span id="iol-height-val" style="font-size:var(--tx-sm);font-weight:700;color:var(--primary);min-width:60px;text-align:right">163 cm</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:var(--tx-xs);color:var(--text-muted);margin-top:2px">
+            <span>140 cm</span><span>Very short risk ↑↑↑ at &lt;150</span><span>185 cm</span>
+          </div>
+        </div>
+
+        <!-- EFW at 36 weeks -->
+        <div style="margin-bottom:var(--sp5)">
+          <label style="display:block;font-size:var(--tx-sm);font-weight:600;color:var(--text);margin-bottom:var(--sp2)">Estimated Fetal Weight (36-week scan)</label>
+          <div style="display:flex;gap:var(--sp2);align-items:center">
+            <input type="range" id="iol-efw" min="2500" max="5500" value="3500" step="50"
+              style="flex:1;accent-color:var(--primary)"
+              oninput="document.getElementById('iol-efw-val').textContent=(this.value/1000).toFixed(2)+' kg';updateIOL()">
+            <span id="iol-efw-val" style="font-size:var(--tx-sm);font-weight:700;color:var(--primary);min-width:65px;text-align:right">3.50 kg</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:var(--tx-xs);color:var(--text-muted);margin-top:2px">
+            <span>2.5 kg</span><span style="color:var(--warning,#964219);font-weight:600">4.0kg ▲ 4.5kg ▲▲ 5.0kg ▲▲▲</span><span>5.5 kg</span>
+          </div>
+        </div>
+
+        <!-- Diabetes status -->
+        <div style="margin-bottom:var(--sp5)">
+          <label style="display:block;font-size:var(--tx-sm);font-weight:600;color:var(--text);margin-bottom:var(--sp2)">Diabetes / GDM Status</label>
+          <div style="display:flex;gap:var(--sp2);flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:var(--sp2);font-size:var(--tx-sm);cursor:pointer">
+              <input type="radio" name="iol-dm" value="none" checked onchange="updateIOL()" style="accent-color:var(--primary)"> No diabetes
+            </label>
+            <label style="display:flex;align-items:center;gap:var(--sp2);font-size:var(--tx-sm);cursor:pointer">
+              <input type="radio" name="iol-dm" value="diet" onchange="updateIOL()" style="accent-color:var(--primary)"> Diet-controlled GDM
+            </label>
+            <label style="display:flex;align-items:center;gap:var(--sp2);font-size:var(--tx-sm);cursor:pointer">
+              <input type="radio" name="iol-dm" value="medicated" onchange="updateIOL()" style="accent-color:var(--primary)"> Medicated GDM / T2DM
+            </label>
+          </div>
+        </div>
+
+        <!-- Parity -->
+        <div style="margin-bottom:var(--sp5)">
+          <label style="display:block;font-size:var(--tx-sm);font-weight:600;color:var(--text);margin-bottom:var(--sp2)">Parity</label>
+          <div style="display:flex;gap:var(--sp2);flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:var(--sp2);font-size:var(--tx-sm);cursor:pointer">
+              <input type="radio" name="iol-parity" value="nulli" checked onchange="updateIOL()" style="accent-color:var(--primary)"> Nulliparous (first baby)
+            </label>
+            <label style="display:flex;align-items:center;gap:var(--sp2);font-size:var(--tx-sm);cursor:pointer">
+              <input type="radio" name="iol-parity" value="multi" onchange="updateIOL()" style="accent-color:var(--primary)"> Multiparous (prior vaginal birth)
+            </label>
+            <label style="display:flex;align-items:center;gap:var(--sp2);font-size:var(--tx-sm);cursor:pointer">
+              <input type="radio" name="iol-parity" value="vbac" onchange="updateIOL()" style="accent-color:var(--primary)"> VBAC (prior caesarean)
+            </label>
+          </div>
+        </div>
+
+        <!-- IOL Gestation -->
+        <div style="margin-bottom:var(--sp3)">
+          <label style="display:block;font-size:var(--tx-sm);font-weight:600;color:var(--text);margin-bottom:var(--sp2)">Proposed IOL Gestation</label>
+          <div style="display:flex;gap:var(--sp2);align-items:center">
+            <input type="range" id="iol-ga" min="37" max="42" value="38" step="1"
+              style="flex:1;accent-color:var(--primary)"
+              oninput="document.getElementById('iol-ga-val').textContent=this.value+' weeks';updateIOL()">
+            <span id="iol-ga-val" style="font-size:var(--tx-sm);font-weight:700;color:var(--primary);min-width:65px;text-align:right">38 weeks</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:var(--tx-xs);color:var(--text-muted);margin-top:2px">
+            <span>37w (early term)</span><span style="color:var(--success,#437a22);font-weight:600">38w = Big Baby trial target</span><span>42w</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Risk Output Panel -->
+      <div id="iol-output" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--sp6)">
+        <!-- Filled by JS -->
+        <p style="color:var(--text-muted);font-size:var(--tx-sm)">Adjust parameters to see risk estimates →</p>
+      </div>
+    </div>
+
+    <!-- Shoulder Dystocia Risk Table by Birthweight -->
+    <div class="section-card" style="margin-bottom:var(--sp6)">
+      <div class="section-header" onclick="toggleSection(this)" aria-expanded="false">
+        <div class="section-icon" style="background:color-mix(in oklch,#da7101 15%,var(--surface));color:#da7101">🚨</div>
+        <div class="section-title">
+          <h2>Shoulder Dystocia Risk by Birthweight Threshold</h2>
+          <p>Evidence-based rates at 4,000 / 4,500 / 4,750 / 5,000g — non-diabetic and diabetic pregnancies</p>
+        </div>
+        <svg class="section-toggle" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="section-body">
+        <div style="margin-bottom:var(--sp4)">
+          <p style="font-size:var(--tx-sm);color:var(--text-muted);margin-bottom:var(--sp4)">Shoulder dystocia rates rise sharply with fetal weight. Importantly, <strong>48% of all shoulder dystocia cases still occur with babies weighing under 4,000g</strong> — most clinical risk cannot be predicted antenatally, making anticipation and skilled management essential regardless of EFW. <em>Sources: ACOG 2020; RCOG GTG42; Al-Qudah et al. BMC Pregnancy 2026; Packet et al. UOG 2023.</em></p>
+          <table class="risk-table">
+            <thead>
+              <tr>
+                <th>Birthweight</th>
+                <th>SD Rate — Non-diabetic</th>
+                <th>SD Rate — Diabetic / GDM</th>
+                <th>CS Rate Increase</th>
+                <th>Clinical Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>&lt;4,000g</strong></td>
+                <td>~0.3–1.0%</td>
+                <td>~0.6–2%</td>
+                <td>Baseline</td>
+                <td>48% of all SD cases still occur below 4,000g — cannot predict by size alone</td>
+              </tr>
+              <tr style="background:color-mix(in oklch,#da7101 5%,var(--surface))">
+                <td><strong>4,000–4,499g</strong> 🟡</td>
+                <td>~1.0–5.3%</td>
+                <td>~4–10%</td>
+                <td>↑ ~36% vs baseline</td>
+                <td>OR ×3–5 vs &lt;4,000g; NICE/RCOG counselling threshold; Big Baby trial EFW &gt;90th centile</td>
+              </tr>
+              <tr style="background:color-mix(in oklch,#da7101 10%,var(--surface))">
+                <td><strong>4,500–4,749g</strong> 🟠</td>
+                <td>~6.5–10%</td>
+                <td>~12–15%</td>
+                <td>↑↑ Significant</td>
+                <td>ACOG caesarean delivery threshold for <em>diabetic</em> women (≥4,500g)</td>
+              </tr>
+              <tr style="background:color-mix(in oklch,#da7101 15%,var(--surface))">
+                <td><strong>4,750–4,999g</strong> 🔴</td>
+                <td>~10–21%</td>
+                <td>~20–30%</td>
+                <td>↑↑↑ High</td>
+                <td>ACOG range 4.2–21.1% at 4,750–5,000g; SD OR ~16 for macrosomic fetuses (Al-Qudah 2026)</td>
+              </tr>
+              <tr style="background:color-mix(in oklch,#a13544 12%,var(--surface))">
+                <td><strong>≥5,000g</strong> 🔴🔴</td>
+                <td>~15–30%</td>
+                <td>~30–50%</td>
+                <td>↑↑↑↑ Very High</td>
+                <td>ACOG caesarean delivery threshold for <em>non-diabetic</em> women; major morbidity risk</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Maternal Height & CPD Table -->
+    <div class="section-card" style="margin-bottom:var(--sp6)">
+      <div class="section-header" onclick="toggleSection(this)" aria-expanded="false">
+        <div class="section-icon" style="background:var(--primary-hl);color:var(--primary)">📏</div>
+        <div class="section-title">
+          <h2>Maternal Height: CPD & Emergency Caesarean Risk</h2>
+          <p>Swedish population study (n=581,844) — independent effect of maternal stature on obstetric outcomes</p>
+        </div>
+        <svg class="section-toggle" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="section-body">
+        <div style="background:color-mix(in oklch,var(--primary) 6%,var(--surface));border-left:3px solid var(--primary);border-radius:var(--radius-md);padding:var(--sp4);margin-bottom:var(--sp5);font-size:var(--tx-sm)">
+          <strong>Key findings (Swedish population cohort, n=581,844):</strong> Every 1 cm decrease in height independently increases emergency CS risk by <strong>6.7%</strong>.
+          Height &lt;160 cm explains <strong>7% of all caesarean sections</strong> in the population. Short stature (&lt;150 cm) is associated with OR 2.4 for cephalo-pelvic disproportion (CPD) specifically.
+          The UR-CHOICE tool flags the combined risk of height &lt;160 cm + EFW &gt;4 kg as a compound risk factor for long-term pelvic floor dysfunction.
+        </div>
+        <table class="risk-table">
+          <thead>
+            <tr>
+              <th>Maternal Height</th>
+              <th>Overall CS Rate</th>
+              <th>Emergency CS Rate</th>
+              <th>CS Odds Ratio (vs 166cm ref)</th>
+              <th>CPD / Pelvic Floor Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:color-mix(in oklch,#a13544 15%,var(--surface))">
+              <td><strong>&lt;150 cm</strong> 🔴🔴</td>
+              <td>~35–65%</td>
+              <td>17–22%</td>
+              <td><strong>OR ~9.9</strong> (COR)</td>
+              <td>OR 2.4 for CPD specifically; very high macrosomia compound risk; UR-CHOICE high-risk flag; ACOG/NICE CS threshold discussion strongly indicated</td>
+            </tr>
+            <tr style="background:color-mix(in oklch,#da7101 12%,var(--surface))">
+              <td><strong>150–153 cm</strong> 🔴</td>
+              <td>26–28%</td>
+              <td>16–17%</td>
+              <td>OR ~2.9–1.9</td>
+              <td>Significant CPD risk; any EFW ≥4,000g should trigger individualised IOL/CS discussion</td>
+            </tr>
+            <tr style="background:color-mix(in oklch,#da7101 7%,var(--surface))">
+              <td><strong>154–157 cm</strong> 🟠</td>
+              <td>22–24%</td>
+              <td>14–15%</td>
+              <td>OR ~1.8–1.5</td>
+              <td>Elevated risk; height + EFW compound risk applies; discuss IOL for EFW ≥4,500g</td>
+            </tr>
+            <tr style="background:color-mix(in oklch,#d19900 5%,var(--surface))">
+              <td><strong>158–161 cm</strong> 🟡</td>
+              <td>18–21%</td>
+              <td>11–13%</td>
+              <td>OR ~1.4–1.2</td>
+              <td>Mildly elevated; UR-CHOICE flags height &lt;160 cm threshold; EFW ≥4,500g warrants discussion</td>
+            </tr>
+            <tr>
+              <td><strong>162–165 cm</strong></td>
+              <td>16–17%</td>
+              <td>9–10%</td>
+              <td>OR ~1.1</td>
+              <td>Near-average; standard risk assessment applies</td>
+            </tr>
+            <tr>
+              <td><strong>166–169 cm</strong> (Reference)</td>
+              <td>14–16%</td>
+              <td>8–9%</td>
+              <td>Reference (1.0)</td>
+              <td>Population reference group</td>
+            </tr>
+            <tr style="background:color-mix(in oklch,var(--success,#437a22) 5%,var(--surface))">
+              <td><strong>≥170 cm</strong> ✅</td>
+              <td>12–14%</td>
+              <td>6–8%</td>
+              <td>OR 0.76–0.9 (protective)</td>
+              <td>Taller stature independently reduces emergency CS and CPD risk; relative pelvic floor protection at equivalent EFW</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:var(--tx-xs);color:var(--text-muted);margin-top:var(--sp4)">
+          Source: Cnattingius S et al. Swedish Medical Birth Register, n=581,844. Eur J Obstet Gynecol 2010; 
+          Borell U, Fernström I. Short stature and pelvic architecture. Acta Radiol 1960; 
+          UR-CHOICE (Wilson et al. Int Urogynecol J 2014).
+        </p>
+      </div>
+    </div>
+
+    <!-- IOL Benefit/Risk Table -->
+    <div class="section-card" style="margin-bottom:var(--sp6)">
+      <div class="section-header" onclick="toggleSection(this)" aria-expanded="true">
+        <div class="section-icon" style="background:color-mix(in oklch,var(--success,#437a22) 12%,var(--surface));color:var(--success,#437a22)">⚖️</div>
+        <div class="section-title">
+          <h2>IOL Benefit/Risk: Evidence Summary (2025–2026)</h2>
+          <p>Big Baby Trial (Lancet 2025, n=2,893) + Al-Qudah meta-analysis (BMC Pregnancy 2026, n=3,984)</p>
+        </div>
+        <svg class="section-toggle open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="section-body open">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp4);margin-bottom:var(--sp5)" class="iol-evidence-grid">
+
+          <!-- Big Baby Trial -->
+          <div style="background:color-mix(in oklch,var(--success,#437a22) 5%,var(--surface));border:1px solid color-mix(in oklch,var(--success,#437a22) 20%,var(--border));border-radius:var(--radius-lg);padding:var(--sp4)">
+            <div style="font-size:var(--tx-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--success,#437a22);font-weight:700;margin-bottom:var(--sp2)">Big Baby Trial · Lancet 2025</div>
+            <p style="font-size:var(--tx-xs);color:var(--text-muted);margin-bottom:var(--sp3)">RCT, n=2,893 · 106 NHS hospitals · IOL at 38–38+4w vs standard care · EFW &gt;90th customised GROW centile</p>
+            <ul style="font-size:var(--tx-xs);color:var(--text);line-height:1.8;list-style:none;padding:0">
+              <li>✅ <strong>38% ↓ shoulder dystocia</strong> (per-protocol: RR 0.62, 95%CI 0.41–0.92)</li>
+              <li>✅ <strong>21% ↓ emergency CS</strong> (RR 0.79, 95%CI 0.66–0.94)</li>
+              <li>✅ <strong>22% ↓ forceps delivery</strong> (RR 0.78, 95%CI 0.62–0.99)</li>
+              <li>✅ <strong>9% ↓ PPH ≥500mL</strong> (RR 0.91, 95%CI 0.84–0.98)</li>
+              <li>✅ <strong>No increase in OASI</strong> (3rd/4th degree tears: 2.3% vs 2.2%)</li>
+              <li>✅ <strong>Mean birthweight −164g</strong> lower in IOL group</li>
+              <li>✅ 18% vs 32.4% birthweight &gt;4,000g (IOL vs expectant)</li>
+              <li>⚠️ More 2nd degree tears (28% vs 24.5%; RR 1.14)</li>
+              <li>⚠️ Hospital stay +0.4 days before delivery</li>
+              <li>ℹ️ ITT analysis: RR 0.75 (NS) — due to crossover contamination</li>
+            </ul>
+          </div>
+
+          <!-- Al-Qudah Meta-analysis -->
+          <div style="background:color-mix(in oklch,var(--blue,#006494) 5%,var(--surface));border:1px solid color-mix(in oklch,var(--blue,#006494) 20%,var(--border));border-radius:var(--radius-lg);padding:var(--sp4)">
+            <div style="font-size:var(--tx-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--blue,#006494);font-weight:700;margin-bottom:var(--sp2)">Al-Qudah et al. Meta-analysis · BMC Pregnancy 2026</div>
+            <p style="font-size:var(--tx-xs);color:var(--text-muted);margin-bottom:var(--sp3)">Systematic review, n=3,984 across 3 RCTs · GRADE-rated · Big Baby + Boulvain 2015 + Gonen 1997</p>
+            <table class="risk-table" style="font-size:var(--tx-xs)">
+              <thead><tr><th>Outcome</th><th>IOL/1000</th><th>Expectant/1000</th><th>RR (95%CI)</th><th>GRADE</th></tr></thead>
+              <tbody>
+                <tr><td>Shoulder dystocia</td><td>27</td><td>41</td><td><strong>0.65 (0.46–0.91)</strong></td><td>Moderate</td></tr>
+                <tr><td>Caesarean section</td><td>277</td><td>319</td><td><strong>0.87 (0.79–0.95)</strong></td><td>Moderate</td></tr>
+                <tr><td>Instrumental delivery</td><td>154</td><td>173</td><td>0.89 (0.78–1.03)</td><td>Low</td></tr>
+                <tr><td>Spontaneous VB</td><td>568</td><td>505</td><td><strong>1.13 (1.06–1.19)</strong></td><td>Moderate</td></tr>
+                <tr><td>OASI (3rd/4th°)</td><td>23</td><td>21</td><td>1.10 (0.72–1.69)</td><td>Very low</td></tr>
+                <tr><td>PPH &gt;1000mL</td><td>116</td><td>130</td><td>0.89 (0.75–1.06)</td><td>Low</td></tr>
+                <tr style="background:color-mix(in oklch,#da7101 8%,var(--surface))"><td>Phototherapy (neonatal)</td><td>48</td><td>30</td><td><strong>1.63 (1.17–2.25)</strong></td><td>Moderate ⚠️</td></tr>
+                <tr><td>Brachial plexus injury</td><td>2</td><td>2</td><td>0.92 (0.11–7.58)</td><td>Very low</td></tr>
+                <tr><td>Mean birthweight</td><td colspan="2">MD −177g (−279 to −76)</td><td>—</td><td>Moderate</td></tr>
+              </tbody>
+            </table>
+            <p style="font-size:var(--tx-xs);color:var(--primary);font-weight:700;margin-top:var(--sp2)">NNT to prevent 1 caesarean section: ~25 IOLs</p>
+          </div>
+        </div>
+
+        <!-- Phototherapy note -->
+        <div style="background:color-mix(in oklch,#da7101 8%,var(--surface));border:1px solid color-mix(in oklch,#da7101 25%,var(--border));border-radius:var(--radius-lg);padding:var(--sp4);font-size:var(--tx-sm);margin-bottom:var(--sp4)">
+          <strong>⚠️ Phototherapy tradeoff:</strong> IOL at 38 weeks increases neonatal phototherapy (RR 1.63, moderate certainty — 48 vs 30 per 1,000). This likely reflects physiological hyperbilirubinaemia from slightly earlier gestational age, is generally transient and low-severity. It does not represent an increase in NICU admission or serious neonatal morbidity. This must be discussed with parents as part of shared decision-making.
+        </div>
+
+        <!-- Pelvic floor specific effect -->
+        <div style="background:var(--primary-hl);border:1px solid var(--primary);border-radius:var(--radius-lg);padding:var(--sp4);font-size:var(--tx-sm)">
+          <strong style="color:var(--primary)">🌿 Pelvic Floor Impact of IOL for Macrosomia:</strong>
+          <ul style="margin-top:var(--sp2);line-height:1.9;color:var(--text)">
+            <li>IOL reduces birthweight by ~177g on average — directly lowers levator stretch demand (capacity-demand model: DeLancey 2016)</li>
+            <li>IOL reduces macrosomia ≥4,000g by <strong>47%</strong> (RR 0.53) and ≥4,500g by <strong>78%</strong> (RR 0.22) — 2026 AJOG MFM meta-analysis</li>
+            <li>IOL reduces emergency CS (21%) and forceps (22%) — both independently reduce levator avulsion risk</li>
+            <li>IOL does <strong>not</strong> significantly increase OASI (3rd/4th degree tears: RR 1.03–1.10, not significant, very low certainty)</li>
+            <li>GROW customised chart finding: 96% of LGA babies are identified <em>only</em> by customised (not Hadlock-population) percentiles — supporting use of customised EFW assessment (Big Baby Trial supplementary)</li>
+            <li>Head circumference &gt;35.5 cm (50th percentile) = OR 3.3 for levator injury (Valsky et al.) — IOL reduces projected head size at delivery</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- IOL Timing — Gestation Comparison -->
+    <div class="section-card" style="margin-bottom:var(--sp6)">
+      <div class="section-header" onclick="toggleSection(this)" aria-expanded="false">
+        <div class="section-icon" style="background:color-mix(in oklch,var(--purple,#7a39bb) 10%,var(--surface));color:var(--purple,#7a39bb)">📅</div>
+        <div class="section-title">
+          <h2>Timing of IOL: 37 vs 38 vs 39 vs 40+ Weeks</h2>
+          <p>Trade-offs between gestation, fetal size reduction, and neonatal maturity</p>
+        </div>
+        <svg class="section-toggle" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="section-body">
+        <table class="risk-table">
+          <thead>
+            <tr>
+              <th>Gestation</th>
+              <th>Evidence</th>
+              <th>SD Reduction</th>
+              <th>CS Impact</th>
+              <th>Neonatal Concern</th>
+              <th>Current Guideline</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>37+0 weeks</strong></td>
+              <td>Boulvain 2015 (n=818; EFW&gt;95th centile)</td>
+              <td>~50–68% ↓ severe SD</td>
+              <td>No significant increase</td>
+              <td>Higher early-term morbidity risk vs 38w; respiratory support more likely</td>
+              <td>NICE: acceptable for EFW&gt;95th; counselling required</td>
+            </tr>
+            <tr style="background:var(--primary-hl)">
+              <td><strong>38+0 to 38+4 weeks ⭐</strong></td>
+              <td>Big Baby Trial 2025 (n=2,893; GROW&gt;90th centile) — highest quality evidence</td>
+              <td><strong>38% ↓ SD</strong> (per-protocol, RR 0.62)</td>
+              <td><strong>21% ↓ emergency CS</strong>; 22% ↓ forceps</td>
+              <td>↑ Phototherapy (RR 1.63) — transient; no increase in NICU or serious morbidity</td>
+              <td><strong>Recommended:</strong> NICE (UK) for EFW&gt;90th–95th centile. Under active guideline review.</td>
+            </tr>
+            <tr>
+              <td><strong>39+0 weeks</strong></td>
+              <td>Observational data; no dedicated RCT for macrosomia</td>
+              <td>Reduced vs 40+ weeks; less than 38w IOL</td>
+              <td>Modest reduction</td>
+              <td>Lower phototherapy risk; smaller mean birthweight difference from expectant</td>
+              <td>ACOG: acceptable for non-diabetic macrosomia (≥5,000g); routine practice not supported</td>
+            </tr>
+            <tr>
+              <td><strong>40–41 weeks (expectant)</strong></td>
+              <td>Standard care comparator in all trials</td>
+              <td>Reference</td>
+              <td>↑ CS rate (319/1000 vs 277/1000 in IOL group)</td>
+              <td>↑ birthweight; ↑ macrosomia incidence (32.4% &gt;4,000g vs 18% IOL)</td>
+              <td>ACOG: routine practice for non-diabetic without macrosomia criteria; monitor fetal growth</td>
+            </tr>
+            <tr>
+              <td><strong>Medicated GDM/T2DM</strong></td>
+              <td>NICE/ACOG clinical guidelines (excluded from Big Baby Trial)</td>
+              <td>Routine IOL at 37+0–38+6 weeks</td>
+              <td>Accepted tradeoff; CS threshold ≥4,500g</td>
+              <td>Monitor for hypoglycaemia; NICU access</td>
+              <td><strong>NICE NG3:</strong> Offer IOL at 37+0–38+6 weeks for insulin/oral hypoglycaemic-treated GDM/T2DM</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Capacity-Demand Model -->
+    <div class="section-card" style="margin-bottom:var(--sp6)">
+      <div class="section-header" onclick="toggleSection(this)" aria-expanded="false">
+        <div class="section-icon" style="background:color-mix(in oklch,var(--primary) 10%,var(--surface));color:var(--primary)">🧮</div>
+        <div class="section-title">
+          <h2>DeLancey Capacity–Demand Model: Height × EFW Compound Risk</h2>
+          <p>Engineering framework for predicting levator ani injury from maternal pelvic dimensions and fetal head size</p>
+        </div>
+        <svg class="section-toggle" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="section-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp5)" class="iol-evidence-grid">
+          <div>
+            <h4 style="font-size:var(--tx-sm);font-weight:700;color:var(--text);margin-bottom:var(--sp3)">The Model (Tracy et al. J Biomech Eng 2016; DeLancey et al. AJOG 2024)</h4>
+            <p style="font-size:var(--tx-sm);color:var(--text-muted);line-height:1.8">Analogous to whether a truck fits under a bridge: <strong>Capacity</strong> = maternal levator hiatal dimensions; <strong>Demand</strong> = fetal head circumference. A capacity:demand ratio ≤1 predicts levator ani injury.</p>
+            <ul style="font-size:var(--tx-sm);color:var(--text);line-height:1.9;margin-top:var(--sp3)">
+              <li>Using antenatal ultrasound (hiatal dimensions + fetal head) achieves <strong>80% predictive accuracy</strong> for levator injury (Rostaminia et al. 2015)</li>
+              <li>Fetal head circumference &gt;35.5 cm = OR 3.3 for levator injury (50th percentile centile)</li>
+              <li>15% of women predicted to be at risk of stretch-related injury by this model (Tracy et al. 2016)</li>
+              <li>Short maternal stature (height &lt;160 cm) correlates with smaller levator hiatus — reducing capacity relative to demand</li>
+              <li>IOL at 38 weeks reduces mean birthweight 163–213g (per Big Baby trial) and projected head circumference — directly improving capacity:demand ratio</li>
+            </ul>
+          </div>
+          <div>
+            <h4 style="font-size:var(--tx-sm);font-weight:700;color:var(--text);margin-bottom:var(--sp3)">Combined Height × EFW Risk Matrix</h4>
+            <p style="font-size:var(--tx-xs);color:var(--text-muted);margin-bottom:var(--sp3)">Compound risk for emergency CS + levator injury. UR-CHOICE flags height &lt;160 cm + EFW &gt;4kg as high-risk combination.</p>
+            <table class="risk-table" style="font-size:var(--tx-xs)">
+              <thead>
+                <tr><th>Height</th><th>EFW &lt;4,000g</th><th>EFW 4,000–4,500g</th><th>EFW &gt;4,500g</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>&lt;150 cm</td><td style="background:color-mix(in oklch,#da7101 12%,var(--surface))">⚠️ Elevated CPD</td><td style="background:color-mix(in oklch,#a13544 12%,var(--surface))">🔴 Very High</td><td style="background:color-mix(in oklch,#a13544 18%,var(--surface))">🔴🔴 CS advised</td></tr>
+                <tr><td>150–160 cm</td><td>Moderate</td><td style="background:color-mix(in oklch,#da7101 10%,var(--surface))">🟠 High — IOL discuss</td><td style="background:color-mix(in oklch,#a13544 10%,var(--surface))">🔴 CS/IOL advised</td></tr>
+                <tr><td>160–165 cm</td><td>Baseline</td><td style="background:color-mix(in oklch,#d19900 7%,var(--surface))">🟡 Elevated — counsel</td><td style="background:color-mix(in oklch,#da7101 10%,var(--surface))">🟠 IOL discussion</td></tr>
+                <tr><td>166–170 cm</td><td>Baseline</td><td>Mildly elevated</td><td style="background:color-mix(in oklch,#d19900 7%,var(--surface))">🟡 Counsel re IOL</td></tr>
+                <tr><td>&gt;170 cm</td><td style="background:color-mix(in oklch,var(--success,#437a22) 6%,var(--surface))">✅ Low CPD risk</td><td style="background:color-mix(in oklch,var(--success,#437a22) 4%,var(--surface))">Low–Moderate</td><td>Moderate — standard assessment</td></tr>
+              </tbody>
+            </table>
+            <p style="font-size:var(--tx-xs);color:var(--text-muted);margin-top:var(--sp2)">Sources: DeLancey AJOG 2024; Tracy et al. 2016; UR-CHOICE Wilson 2014; Swedish height study n=581,844.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clinical Decision Summary -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--sp6);margin-bottom:var(--sp6)">
+      <h2 style="font-size:var(--tx-lg);font-weight:700;color:var(--text);margin-bottom:var(--sp4)">🤝 Shared Decision-Making: What to Discuss</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sp4)" class="sdm-grid">
+        <div style="background:color-mix(in oklch,var(--success,#437a22) 6%,var(--surface));border:1px solid color-mix(in oklch,var(--success,#437a22) 20%,var(--border));border-radius:var(--radius-lg);padding:var(--sp4)">
+          <div style="font-size:1.2rem;margin-bottom:var(--sp2)">✅</div>
+          <h4 style="font-size:var(--tx-sm);font-weight:700;color:var(--success,#437a22);margin-bottom:var(--sp2)">Benefits of IOL at 38w</h4>
+          <ul style="font-size:var(--tx-xs);color:var(--text);line-height:1.8;padding-left:var(--sp4)">
+            <li>35–38% reduction in shoulder dystocia (moderate certainty)</li>
+            <li>13–21% reduction in caesarean section</li>
+            <li>22% reduction in forceps delivery</li>
+            <li>13% more spontaneous vaginal births</li>
+            <li>9% reduction in major PPH (≥500mL)</li>
+            <li>Mean birthweight 163–213g lower</li>
+            <li>~47% reduction in birthweight ≥4,000g</li>
+            <li>Reduced levator stretch demand</li>
+          </ul>
+        </div>
+        <div style="background:color-mix(in oklch,#da7101 6%,var(--surface));border:1px solid color-mix(in oklch,#da7101 20%,var(--border));border-radius:var(--radius-lg);padding:var(--sp4)">
+          <div style="font-size:1.2rem;margin-bottom:var(--sp2)">⚠️</div>
+          <h4 style="font-size:var(--tx-sm);font-weight:700;color:#da7101;margin-bottom:var(--sp2)">Tradeoffs of IOL at 38w</h4>
+          <ul style="font-size:var(--tx-xs);color:var(--text);line-height:1.8;padding-left:var(--sp4)">
+            <li>63% more neonatal phototherapy (moderate certainty — transient)</li>
+            <li>More 2nd degree perineal tears (28% vs 24.5%)</li>
+            <li>Hospital stay +0.4 days before delivery</li>
+            <li>Labour requires medical initiation (prostaglandin / balloon / oxytocin)</li>
+            <li>EFW inaccuracy: ±15–20% at term — may not be macrosomic</li>
+            <li>Uncommonly: failed IOL → caesarean (addressed by lower overall CS rate)</li>
+          </ul>
+        </div>
+        <div style="background:color-mix(in oklch,var(--primary) 6%,var(--surface));border:1px solid color-mix(in oklch,var(--primary) 20%,var(--border));border-radius:var(--radius-lg);padding:var(--sp4)">
+          <div style="font-size:1.2rem;margin-bottom:var(--sp2)">ℹ️</div>
+          <h4 style="font-size:var(--tx-sm);font-weight:700;color:var(--primary);margin-bottom:var(--sp2)">No Significant Difference</h4>
+          <ul style="font-size:var(--tx-xs);color:var(--text);line-height:1.8;padding-left:var(--sp4)">
+            <li>OASI / 3rd–4th degree tears (not significantly different)</li>
+            <li>Brachial plexus injury (very low certainty)</li>
+            <li>NICU admission</li>
+            <li>Perinatal mortality</li>
+            <li>Major PPH ≥1,000mL (not significantly different)</li>
+            <li>Neonatal hospital readmissions at 30 days</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Guideline statements -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--sp6);margin-bottom:var(--sp6)">
+      <h2 style="font-size:var(--tx-lg);font-weight:700;color:var(--text);margin-bottom:var(--sp4)">📋 Current Guideline Positions (2024–2026)</h2>
+      <table class="risk-table">
+        <thead><tr><th>Organisation</th><th>Guideline</th><th>IOL Recommendation for Macrosomia</th><th>CS Threshold</th></tr></thead>
+        <tbody>
+          <tr><td><strong>NICE (UK)</strong></td><td>NG25 (2021, updated 2023)</td><td>Discuss IOL for EFW &gt;90th–95th centile; acknowledge SD reduction vs phototherapy tradeoff; Big Baby trial now supporting routine offer at 38w</td><td>Discuss CS if EFW ≥5,000g non-diabetic; ≥4,500g diabetic</td></tr>
+          <tr><td><strong>ACOG (USA)</strong></td><td>Practice Bulletin 173 (2016, reaffirmed 2022)</td><td>Suspected macrosomia alone not indication for IOL before 39 weeks; individualised assessment</td><td>CS at ≥5,000g non-diabetic; ≥4,500g diabetic</td></tr>
+          <tr><td><strong>RCOG (UK)</strong></td><td>GTG 42 (2012); Big Baby trial expected to inform update</td><td>Individualised care; offer IOL discussion for suspected macrosomia; anticipate shoulder dystocia</td><td>CS if ≥5,000g non-diabetic; earlier for diabetic</td></tr>
+          <tr><td><strong>RANZCOG (Australia)</strong></td><td>C-Obs 47 (2023)</td><td>Offer IOL discussion for EFW &gt;4,500g or GDM; individualised; note evidence gap for non-diabetic &lt;5,000g</td><td>CS: discuss ≥5,000g; ≥4,500g + diabetic</td></tr>
+          <tr><td><strong>UR-CHOICE</strong></td><td>Wilson et al. Int Urogynecol J 2014</td><td>Height &lt;160 cm + EFW &gt;4kg = compound risk flag for long-term PFD; IOL may reduce this compounded risk</td><td>Clinical scoring tool — not a guideline</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- References -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--sp6)">
+      <h3 style="font-size:var(--tx-base);font-weight:700;color:var(--text);margin-bottom:var(--sp4)">Key References</h3>
+      <ol style="font-size:var(--tx-xs);line-height:2;list-style:decimal;padding-left:var(--sp5);columns:2;column-gap:var(--sp6)">
+        <li>Gardosi J (Big Baby Trial Collaborative). Induction of labour for suspected large-for-gestational-age fetus. <cite>Lancet</cite> 2025;405:1743–1752.</li>
+        <li>Al-Qudah A et al. Induction of labour versus expectant management in suspected macrosomia: systematic review and meta-analysis. <cite>BMC Pregnancy Childbirth</cite> 2026.</li>
+        <li>Boulvain M et al. Induction of labour versus expectant management for large-for-date fetuses: a RCT. <cite>Lancet</cite> 2015;385:2600–2605.</li>
+        <li>Tracy PV, DeLancey JOL, Ashton-Miller JA. A geometric capacity-demand analysis of maternal levator muscle stretch required for vaginal delivery. <cite>J Biomech Eng</cite> 2016;138:021001.</li>
+        <li>DeLancey JOL et al. Pelvic floor injury during vaginal birth is life-altering and preventable — what can we do about it? <cite>Am J Obstet Gynecol</cite> 2024;230:279–295.</li>
+        <li>Wilson D et al. UR-CHOICE: can we provide mothers-to-be with information about the risk of future pelvic floor dysfunction? <cite>Int Urogynecol J</cite> 2014;25:1449–1452.</li>
+        <li>Valsky DV et al. Fetal head circumference and length of second stage are risk factors for levator ani muscle injury diagnosed by 3D transperineal ultrasound in primiparous women. <cite>Am J Obstet Gynecol</cite> 2009;201:91.e1–7.</li>
+        <li>Cnattingius S et al. Maternal short stature and risk of caesarean section: Swedish population study. <cite>Eur J Obstet Gynecol Reprod Biol</cite> 2010.</li>
+        <li>Packet B et al. Predictive factors for OASI in primiparous women: SR and meta-analysis. <cite>Ultrasound Obstet Gynecol</cite> 2023;62:486–496.</li>
+        <li>ACOG Practice Bulletin No. 173: Fetal macrosomia. <cite>Obstet Gynecol</cite> 2016;128:e195–e209.</li>
+        <li>RCOG GTG 42: Shoulder dystocia. 2012. Royal College of Obstetricians and Gynaecologists.</li>
+        <li>NICE NG25: Diabetes in pregnancy: management from preconception to the postnatal period. 2023 update.</li>
+        <li>RANZCOG C-Obs 47: Diagnosis and management of fetal macrosomia. 2023.</li>
+        <li>Rostaminia G et al. New measures for predicting birth-related pelvic floor trauma. <cite>Female Pelvic Med Reconstr Surg</cite> 2015;22:292–296.</li>
+      </ol>
+    </div>
+
+  </div>
+</div><!-- /page-iol -->
+
+
+<script>
+
+function updateIOL(){
+  var height = parseInt(document.getElementById('iol-height').value);
+  var efw = parseInt(document.getElementById('iol-efw').value);
+  var dm = document.querySelector('input[name="iol-dm"]:checked').value;
+  var parity = document.querySelector('input[name="iol-parity"]:checked').value;
+  var ga = parseInt(document.getElementById('iol-ga').value);
+
+  // SD base rates by EFW
+  var sdBase, sdDiab, efwLabel, efwColor;
+  if(efw < 4000){
+    sdBase=0.7; sdDiab=1.3; efwLabel='&lt;4,000g — below macrosomia threshold'; efwColor='var(--success,#437a22)';
+  } else if(efw < 4500){
+    sdBase=3.0; sdDiab=7.0; efwLabel='4,000–4,499g — Macrosomia threshold 🟡'; efwColor='#da7101';
+  } else if(efw < 4750){
+    sdBase=8.0; sdDiab=13.5; efwLabel='4,500–4,749g — High macrosomia 🟠'; efwColor='#c55700';
+  } else if(efw < 5000){
+    sdBase=15.0; sdDiab=25.0; efwLabel='4,750–4,999g — Very high risk 🔴'; efwColor='var(--error,#a12c7b)';
+  } else {
+    sdBase=22.0; sdDiab=40.0; efwLabel='≥5,000g — Extreme macrosomia 🔴🔴'; efwColor='var(--notification,#a13544)';
+  }
+
+  var sdDisplay = (dm === 'medicated' || dm === 'diet') ? sdDiab : sdBase;
+  var dmLabel = dm === 'none' ? 'Non-diabetic' : dm === 'diet' ? 'Diet-controlled GDM' : 'Medicated GDM/T2DM';
+
+  // Maternal height CPD risk
+  var heightOR, heightRisk, heightColor, heightLabel;
+  if(height < 150){
+    heightOR='~9.9'; heightRisk='Very high — OR 2.4 for CPD'; heightColor='var(--notification,#a13544)'; heightLabel='🔴🔴 Very short — CPD risk++';
+  } else if(height < 154){
+    heightOR='~2.9–1.9'; heightRisk='High CPD + emergency CS risk'; heightColor='var(--error,#a12c7b)'; heightLabel='🔴 Short — elevated CPD';
+  } else if(height < 158){
+    heightOR='~1.8–1.5'; heightRisk='Moderately elevated'; heightColor='#da7101'; heightLabel='🟠 Below average — risk elevated';
+  } else if(height < 162){
+    heightOR='~1.4–1.2'; heightRisk='Mildly elevated (UR-CHOICE flag: <160cm)'; heightColor='#d19900'; heightLabel='🟡 Mild elevation — UR-CHOICE flag';
+  } else if(height < 166){
+    heightOR='~1.1'; heightRisk='Near-average risk'; heightColor='var(--text-muted)'; heightLabel='Near-average';
+  } else if(height < 170){
+    heightOR='1.0 (reference)'; heightRisk='Population reference'; heightColor='var(--success,#437a22)'; heightLabel='✅ Reference population';
+  } else {
+    heightOR='0.76–0.9'; heightRisk='Protective — taller stature'; heightColor='var(--success,#437a22)'; heightLabel='✅ Tall — relatively protective';
+  }
+
+  // Compound risk
+  var compoundHigh = (height < 160 && efw >= 4000);
+  var compoundVeryHigh = (height < 155 && efw >= 4500);
+
+  // IOL effect (based on Big Baby / Al-Qudah meta-analysis)
+  var iolSDReduction = 0.35; // 35% average from meta-analysis (RR 0.65)
+  if(ga <= 38) iolSDReduction = 0.38; // 38% per-protocol Big Baby at 38w
+  if(ga >= 40) iolSDReduction = 0.15;
+  var sdWithIOL = sdDisplay * (1 - iolSDReduction);
+  var iolCSNote = ga <= 38 ? '13–21% ↓ (meta-analysis RR 0.87; Big Baby RR 0.79 emergency CS)' : ga === 39 ? 'Modest ↓ CS' : 'Minimal benefit vs expectant';
+  var phototherapyNote = ga <= 38 ? '⚠️ +63% phototherapy risk (transient)' : ga === 39 ? '⚠️ Modest ↑ phototherapy' : 'Low phototherapy risk';
+
+  // IOL recommendation level
+  var iolRec, iolRecColor;
+  if(efw >= 5000 || (efw >= 4500 && (dm==='medicated'||dm==='diet'))){
+    iolRec = '🔴 <strong>IOL strongly recommended discussion</strong> — meets ACOG/NICE/RANZCOG criteria'; iolRecColor='var(--notification,#a13544)';
+  } else if(efw >= 4500 || (efw >= 4000 && height < 155)){
+    iolRec = '🟠 <strong>IOL discussion recommended</strong> — NICE criteria met or compound risk'; iolRecColor='#da7101';
+  } else if(efw >= 4000 && height < 163){
+    iolRec = '🟡 <strong>IOL discussion appropriate</strong> — UR-CHOICE compound risk flag'; iolRecColor='#d19900';
+  } else if(efw >= 4000){
+    iolRec = '🟢 <strong>IOL discussion reasonable</strong> — above macrosomia threshold but standard risk profile'; iolRecColor='var(--success,#437a22)';
+  } else {
+    iolRec = '✅ <strong>Below macrosomia threshold</strong> — standard antenatal monitoring; low IOL indication from size alone'; iolRecColor='var(--success,#437a22)';
+  }
+
+  var parityNote = parity==='nulli' ? 'Nulliparous — higher OASI + levator injury risk if instrumental birth required' : parity==='multi' ? 'Multiparous — may have existing levator defects; macrosomia risk compounds' : 'VBAC — uterine rupture risk must be balanced; IOL method selection critical (no prostaglandins if prior CS)';
+
+  document.getElementById('iol-output').innerHTML = `
+    <h2 style="font-size:var(--tx-lg);font-weight:700;color:var(--text);margin-bottom:var(--sp4)">📊 Estimated Risk Profile</h2>
+
+    <div style="background:color-mix(in oklch,${efwColor} 8%,var(--surface));border-left:4px solid ${efwColor};border-radius:var(--radius-md);padding:var(--sp3) var(--sp4);margin-bottom:var(--sp4)">
+      <div style="font-size:var(--tx-xs);font-weight:700;color:${efwColor}">${efwLabel}</div>
+      <div style="font-size:var(--tx-sm);color:var(--text);margin-top:4px">EFW ${(efw/1000).toFixed(2)} kg · ${dmLabel}</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp3);margin-bottom:var(--sp4)">
+      <div style="background:var(--surface-offset);border-radius:var(--radius-lg);padding:var(--sp3);text-align:center">
+        <div style="font-size:1.6rem;font-weight:800;color:${efwColor};font-variant-numeric:tabular-nums">${sdDisplay.toFixed(1)}%</div>
+        <div style="font-size:var(--tx-xs);color:var(--text-muted)">Shoulder dystocia risk</div>
+        <div style="font-size:var(--tx-xs);color:var(--text-muted)">(expectant management)</div>
+      </div>
+      <div style="background:var(--surface-offset);border-radius:var(--radius-lg);padding:var(--sp3);text-align:center">
+        <div style="font-size:1.6rem;font-weight:800;color:var(--success,#437a22);font-variant-numeric:tabular-nums">${sdWithIOL.toFixed(1)}%</div>
+        <div style="font-size:var(--tx-xs);color:var(--text-muted)">SD risk with IOL at ${ga}w</div>
+        <div style="font-size:var(--tx-xs);color:var(--success,#437a22)">↓ ${(iolSDReduction*100).toFixed(0)}% reduction</div>
+      </div>
+    </div>
+
+    <div style="background:color-mix(in oklch,${heightColor} 8%,var(--surface));border-left:4px solid ${heightColor};border-radius:var(--radius-md);padding:var(--sp3) var(--sp4);margin-bottom:var(--sp4)">
+      <div style="font-size:var(--tx-xs);font-weight:700;color:${heightColor}">Height: ${height} cm — ${heightLabel}</div>
+      <div style="font-size:var(--tx-xs);color:var(--text-muted);margin-top:2px">Emergency CS OR: ${heightOR} vs 166cm reference · ${heightRisk}</div>
+    </div>
+
+    ${compoundVeryHigh ? `<div style="background:color-mix(in oklch,var(--notification,#a13544) 12%,var(--surface));border:2px solid var(--notification,#a13544);border-radius:var(--radius-lg);padding:var(--sp3) var(--sp4);margin-bottom:var(--sp4);font-size:var(--tx-xs);font-weight:700;color:var(--notification,#a13544)">🔴🔴 COMPOUND HIGH RISK: Short stature (&lt;155cm) + EFW ≥4,500g — CPD + macrosomia compounding. IOL + low CS threshold strongly recommended for discussion. DeLancey capacity-demand model predicts very high levator injury risk.</div>` : compoundHigh ? `<div style="background:color-mix(in oklch,#da7101 10%,var(--surface));border:2px solid #da7101;border-radius:var(--radius-lg);padding:var(--sp3) var(--sp4);margin-bottom:var(--sp4);font-size:var(--tx-xs);font-weight:700;color:#da7101">⚠️ COMPOUND RISK FLAG (UR-CHOICE): Height &lt;160cm + EFW &gt;4kg — elevated long-term pelvic floor dysfunction risk. IOL discussion appropriate. DeLancey capacity:demand ratio unfavourable.</div>` : ''}
+
+    <div style="font-size:var(--tx-xs);color:var(--text-muted);margin-bottom:var(--sp3);padding:var(--sp3);background:var(--surface-offset);border-radius:var(--radius-md)">
+      <strong>CS impact with IOL (${ga}w):</strong> ${iolCSNote}<br>
+      <strong>Neonatal:</strong> ${phototherapyNote}<br>
+      <strong>Parity consideration:</strong> ${parityNote}
+    </div>
+
+    <div style="padding:var(--sp3) var(--sp4);border-radius:var(--radius-lg);border:2px solid ${iolRecColor};background:color-mix(in oklch,${iolRecColor} 7%,var(--surface));font-size:var(--tx-sm)">
+      ${iolRec}
+    </div>
+    <p style="font-size:var(--tx-xs);color:var(--text-muted);margin-top:var(--sp3)">⚠️ Risk estimates are derived from population studies and RCTs. Individual clinical assessment, ultrasound accuracy (±15–20% at term), and shared decision-making must guide all clinical decisions.</p>
+  `;
+}
+// Init on load
+document.addEventListener('DOMContentLoaded', function(){ setTimeout(updateIOL, 200); });
+</script>
 </body>
 </html>
