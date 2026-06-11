@@ -80,7 +80,7 @@ table{border-collapse:collapse;width:100%}
   box-shadow:var(--shadow-sm);
 }
 .nav-logo{display:flex;align-items:center;gap:var(--sp2);font-weight:700;font-size:var(--tx-sm);color:var(--primary);text-decoration:none;flex-shrink:0}
-.nav-tabs{display:flex;gap:var(--sp1);overflow-x:auto;flex:1;scrollbar-width:none}
+.nav-tabs{display:flex;gap:var(--sp1);overflow-x:auto;flex:1;scrollbar-width:none;white-space:nowrap}
 .nav-tabs::-webkit-scrollbar{display:none}
 .nav-tab{
   padding:var(--sp2) var(--sp4);border-radius:9999px;
@@ -276,7 +276,7 @@ cite{font-style:italic}
   .section-body,.section-header{padding-left:var(--sp4);padding-right:var(--sp4)}
   .info-grid,.prev-grid,.stat-grid,.grade-row{grid-template-columns:1fr}
   .sbar-label{width:110px;font-size:.65rem}
-  .nav-tabs{display:none}
+  .nav-tabs{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
   .page-hero,.dash-hero{padding-left:var(--sp4);padding-right:var(--sp4)}
 }
 
