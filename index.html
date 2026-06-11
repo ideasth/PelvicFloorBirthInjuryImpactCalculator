@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pelvic Floor Risk Dashboard — AUPFHS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/* ── DESIGN TOKENS ─────────────────────────────────────────────── */
+:root,[data-theme="light"]{
+  --color-bg:#f5f4f0;--color-surface:#f9f8f5;--color-surface-2:#ffffff;
+  --color-surface-offset:#ece9e4;--color-divider:#dcd8d2;--color-border:#d0ccc5;
+  --color-text:#1e1c17;--color-text-muted:#6b6860;--color-text-faint:#b5b2ac;
+  --color-primary:#006c6e;--color-primary-hover:#004f51;--color-primary-light:#e0f0ef;
+  --color-accent:#8b3a2a;--color-accent-light:#f5e6e2;
+  --color-warn:#b86b00;--color-warn-light:#fdf0dc;
+  --color-success:#3d7a2e;--color-success-light:#e6f2e3;
+  --color-info:#2a5c8b;--color-info-light:#deeaf4;
+  --color-violet:#5c3b8b;--color-violet-light:#ede6f4;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.07);--shadow-md:0 4px 14px rgba(0,0,0,0.09);
+  --shadow-lg:0 10px 32px rgba(0,0,0,0.12);
+  --radius-sm:6px;--radius-md:10px;--radius-lg:16px;--radius-full:999px;
+  --font-body:'DM Sans',system-ui,sans-serif;--font-display:'DM Serif Display',Georgia,serif;
+  --text-xs:clamp(.75rem,.7rem + .15vw,.825rem);--text-sm:clamp(.875rem,.83rem + .2vw,1rem);
+  --text-base:clamp(1rem,.95rem + .25vw,1.125rem);--text-lg:clamp(1.125rem,1rem + .5vw,1.375rem);
+  --text-xl:clamp(1.375rem,1.1rem + 1vw,1.875rem);--text-2xl:clamp(1.75rem,1.2rem + 2vw,2.5rem);
+  --sp1:.25rem;--sp2:.5rem;--sp3:.75rem;--sp4:1rem;--sp5:1.25rem;--sp6:1.5rem;
+  --sp8:2rem;--sp10:2.5rem;--sp12:3rem;--sp16:4rem;
+  --content-default:1100px;--content-wide:1320px;
+  --transition:180ms cubic-bezier(.16,1,.3,1);
+}
+[data-theme="dark"]{
+  --color-bg:#151412;--color-surface:#1b1a17;--color-surface-2:#21201d;
+  --color-surface-offset:#1e1d1a;--color-divider:#2a2927;--color-border:#3a3835;
+  --color-text:#d0cec9;--color-text-muted:#78756f;--color-text-faint:#524f4a;
+  --color-primary:#4e9fa8;--color-primary-hover:#3d8a92;--color-primary-light:#1e3033;
+  --color-accent:#d4715d;--color-accent-light:#3a2320;
+  --color-warn:#e8a840;--color-warn-light:#2e2210;
+  --color-success:#6db855;--color-success-light:#1a2e15;
+  --color-info:#5a9ed4;--color-info-light:#15253a;
+  --color-violet:#9b72d4;--color-violet-light:#251840;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.25);--shadow-md:0 4px 14px rgba(0,0,0,.35);
+  --shadow-lg:0 10px 32px rgba(0,0,0,.45);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:72px;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font-body);font-size:var(--text-base);color:var(--color-text);
+  background:var(--color-bg);min-height:100dvh;line-height:1.6}
+h1,h2,h3,h4{text-wrap:balance;line-height:1.2}
+p,li{max-width:72ch;text-wrap:pretty}
+img,svg{display:block;max-width:100%}
+button{cursor:pointer;font:inherit;color:inherit;background:none;border:none}
+input,select{font:inherit;color:var(--color-text)}
+a{color:inherit}
+table{border-collapse:collapse;width:100%}
+:focus-visible{outline:2px solid var(--color-primary);outline-offset:3px;border-radius:var(--radius-sm)}
+::selection{background:color-mix(in oklab,var(--color-primary) 20%,transparent);color:var(--color-text)}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ── LAYOUT ────────────────────────────────────────────────────── */
+.container{max-width:var(--content-default);margin-inline:auto;padding-inline:var(--sp6)}
+.container--wide{max-width:var(--content-wide)}
+
+/* ── HEADER ────────────────────────────────────────────────────── */
+.header{position:sticky;top:0;z-index:100;background:var(--color-bg);
+  border-bottom:1px solid var(--color-divider);box-shadow:var(--shadow-sm)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;
+  height:64px;gap:var(--sp4)}
+.logo{display:flex;align-items:center;gap:var(--sp3);text-decoration:none;color:var(--color-text)}
+.logo-mark{width:36px;height:36px;flex-shrink:0}
+.logo-text{font-family:var(--font-display);font-size:var(--text-lg);line-height:1.1;color:var(--color-text)}
+.logo-text span{display:block;font-family:var(--font-body);font-size:var(--text-xs);
+  color:var(--color-text-muted);font-style:italic}
+.header-actions{display:flex;align-items:center;gap:var(--sp3)}
+.btn-icon{width:38px;height:38px;display:flex;align-items:center;justify-content:center;
+  border-radius:var(--radius-md);color:var(--color-text-muted);
+  transition:background var(--transition),color var(--transition)}
+.btn-icon:hover{background:var(--color-surface-offset);color:var(--color-text)}
+.disclaimer-badge{background:var(--color-warn-light);color:var(--color-warn);
+  border:1px solid color-mix(in oklab,var(--color-warn) 25%,transparent);
+  font-size:var(--text-xs);padding:var(--sp1) var(--sp3);border-radius:var(--radius-full);
+  font-weight:600;white-space:nowrap}
+
+/* ── HERO ─────────────────────────────────────────────────────── */
+.hero{padding:var(--sp12) 0 var(--sp8);background:linear-gradient(160deg,
+  color-mix(in oklab,var(--color-primary) 6%,var(--color-bg)) 0%,var(--color-bg) 60%)}
+.hero-content{display:grid;gap:var(--sp6);max-width:760px}
+.hero-eyebrow{font-size:var(--text-xs);font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--color-primary)}
+.hero h1{font-family:var(--font-display);font-size:var(--text-2xl);color:var(--color-text)}
+.hero-lead{font-size:var(--text-lg);color:var(--color-text-muted);line-height:1.7}
+.hero-meta{display:flex;flex-wrap:wrap;gap:var(--sp3)}
+.meta-chip{display:flex;align-items:center;gap:var(--sp2);padding:var(--sp2) var(--sp4);
+  border-radius:var(--radius-full);background:var(--color-surface);border:1px solid var(--color-border);
+  font-size:var(--text-xs);color:var(--color-text-muted)}
+.meta-chip svg{width:14px;height:14px;color:var(--color-primary)}
+
+/* ── DISCLAIMER ─────────────────────────────────────────────────── */
+.disclaimer-bar{background:var(--color-warn-light);border:1px solid color-mix(in oklab,var(--color-warn) 30%,transparent);
+  border-radius:var(--radius-lg);padding:var(--sp5) var(--sp6);margin-block:var(--sp8)}
+.disclaimer-bar h3{font-size:var(--text-base);color:var(--color-warn);margin-bottom:var(--sp2);display:flex;align-items:center;gap:var(--sp2)}
+.disclaimer-bar p{font-size:var(--text-sm);color:var(--color-text-muted);max-width:100%}
+
+/* ── SECTION TITLES ───────────────────────────────────────────── */
+.section{padding-block:var(--sp10)}
+.section-title{font-family:var(--font-display);font-size:var(--text-xl);color:var(--color-text);margin-bottom:var(--sp2)}
+.section-subtitle{font-size:var(--text-sm);color:var(--color-text-muted);margin-bottom:var(--sp8);max-width:640px}
+.section-divider{height:1px;background:var(--color-divider);margin-block:var(--sp10)}
+
+/* ── CARDS ────────────────────────────────────────────────────── */
+.card{background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);padding:var(--sp6);box-shadow:var(--shadow-sm)}
+.card-title{font-size:var(--text-base);font-weight:600;margin-bottom:var(--sp1);
+  display:flex;align-items:center;gap:var(--sp2)}
+.card-subtitle{font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--sp5)}
+.card-header{margin-bottom:var(--sp5)}
+
+/* ── STAT CHIPS ──────────────────────────────────────────────── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--sp4)}
+.stat-card{background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);padding:var(--sp5);text-align:center;box-shadow:var(--shadow-sm);
+  transition:box-shadow var(--transition),transform var(--transition)}
+.stat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.stat-value{font-family:var(--font-display);font-size:var(--text-2xl);font-weight:700;line-height:1}
+.stat-label{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--sp2);line-height:1.4}
+.stat-source{font-size:.65rem;color:var(--color-text-faint);margin-top:var(--sp1)}
+
+.c-primary{color:var(--color-primary)}
+.c-accent{color:var(--color-accent)}
+.c-warn{color:var(--color-warn)}
+.c-success{color:var(--color-success)}
+.c-info{color:var(--color-info)}
+.c-violet{color:var(--color-violet)}
+
+.bg-primary-light{background:var(--color-primary-light);border-color:color-mix(in oklab,var(--color-primary) 20%,transparent)}
+.bg-accent-light{background:var(--color-accent-light);border-color:color-mix(in oklab,var(--color-accent) 20%,transparent)}
+.bg-warn-light{background:var(--color-warn-light);border-color:color-mix(in oklab,var(--color-warn) 20%,transparent)}
+.bg-success-light{background:var(--color-success-light);border-color:color-mix(in oklab,var(--color-success) 20%,transparent)}
+.bg-violet-light{background:var(--color-violet-light);border-color:color-mix(in oklab,var(--color-violet) 20%,transparent)}
+.bg-info-light{background:var(--color-info-light);border-color:color-mix(in oklab,var(--color-info) 20%,transparent)}
+
+/* ── TABS ─────────────────────────────────────────────────────── */
+.tabs-wrap{overflow-x:auto;scrollbar-width:none}
+.tabs-wrap::-webkit-scrollbar{display:none}
+.tabs{display:flex;gap:var(--sp1);border-bottom:2px solid var(--color-divider);margin-bottom:var(--sp8)}
+.tab-btn{padding:var(--sp3) var(--sp5);font-size:var(--text-sm);font-weight:500;
+  color:var(--color-text-muted);border-bottom:2px solid transparent;margin-bottom:-2px;
+  white-space:nowrap;border-radius:var(--radius-sm) var(--radius-sm) 0 0;
+  transition:color var(--transition),border-color var(--transition),background var(--transition)}
+.tab-btn:hover{color:var(--color-text);background:var(--color-surface-offset)}
+.tab-btn.active{color:var(--color-primary);border-bottom-color:var(--color-primary);font-weight:600}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ── RISK TABLE ──────────────────────────────────────────────── */
+.risk-table-wrap{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--color-border)}
+.risk-table{font-size:var(--text-xs);border-collapse:collapse;width:100%;min-width:640px}
+.risk-table th{background:var(--color-surface-offset);color:var(--color-text-muted);
+  font-weight:600;font-size:.65rem;text-transform:uppercase;letter-spacing:.07em;
+  padding:var(--sp3) var(--sp4);text-align:left;white-space:nowrap;border-bottom:1px solid var(--color-border)}
+.risk-table td{padding:var(--sp3) var(--sp4);border-bottom:1px solid var(--color-divider);
+  vertical-align:top;line-height:1.5}
+.risk-table tr:last-child td{border-bottom:none}
+.risk-table tr:hover td{background:var(--color-surface-offset)}
+.risk-tag{display:inline-block;padding:1px 8px;border-radius:var(--radius-full);font-size:.65rem;
+  font-weight:700;letter-spacing:.04em;vertical-align:middle}
+.rt-low{background:var(--color-success-light);color:var(--color-success)}
+.rt-mod{background:var(--color-warn-light);color:var(--color-warn)}
+.rt-high{background:var(--color-accent-light);color:var(--color-accent)}
+.rt-vhigh{background:#3a1010;color:#e07070}
+[data-theme="light"] .rt-vhigh{background:#fce8e8;color:#b02020}
+
+/* ── RISK CALCULATOR ─────────────────────────────────────────── */
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp8)}
+@media(max-width:760px){.calc-grid{grid-template-columns:1fr}}
+.form-group{margin-bottom:var(--sp5)}
+.form-label{font-size:var(--text-sm);font-weight:600;display:block;margin-bottom:var(--sp2)}
+.form-hint{font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--sp2)}
+.form-control{width:100%;padding:var(--sp3) var(--sp4);border-radius:var(--radius-md);
+  border:1.5px solid var(--color-border);background:var(--color-surface-2);
+  font-size:var(--text-sm);transition:border-color var(--transition),box-shadow var(--transition)}
+.form-control:focus{outline:none;border-color:var(--color-primary);
+  box-shadow:0 0 0 3px color-mix(in oklab,var(--color-primary) 15%,transparent)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp4)}
+.btn-primary{padding:var(--sp3) var(--sp6);background:var(--color-primary);color:#fff;
+  border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:600;
+  transition:background var(--transition),box-shadow var(--transition)}
+.btn-primary:hover{background:var(--color-primary-hover);box-shadow:var(--shadow-sm)}
+.btn-outline{padding:var(--sp3) var(--sp5);border:1.5px solid var(--color-border);
+  border-radius:var(--radius-md);font-size:var(--text-sm);
+  transition:border-color var(--transition),background var(--transition)}
+.btn-outline:hover{border-color:var(--color-primary);background:var(--color-primary-light)}
+.result-panel{background:var(--color-surface-2);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);padding:var(--sp6)}
+.result-panel.hidden{display:none}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp4);margin-top:var(--sp5)}
+.result-item{padding:var(--sp4);border-radius:var(--radius-md);border:1px solid;text-align:center}
+.result-pct{font-family:var(--font-display);font-size:var(--text-xl);font-weight:700}
+.result-desc{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--sp1)}
+.result-range{font-size:.65rem;color:var(--color-text-faint)}
+.ur-choice-link{display:inline-flex;align-items:center;gap:var(--sp2);font-size:var(--text-xs);
+  color:var(--color-primary);text-decoration:underline;text-underline-offset:3px}
+
+/* ── CHART CONTAINERS ─────────────────────────────────────────── */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp6)}
+@media(max-width:700px){.chart-grid{grid-template-columns:1fr}}
+.chart-wrap{position:relative;height:260px}
+
+/* ── ROBSON TABLE ─────────────────────────────────────────────── */
+.robson-grid{display:grid;gap:var(--sp4)}
+.robson-row{display:grid;grid-template-columns:38px 1fr auto;gap:var(--sp4);
+  align-items:center;background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-md);padding:var(--sp4);box-shadow:var(--shadow-sm)}
+.robson-num{width:32px;height:32px;border-radius:var(--radius-full);background:var(--color-primary);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:var(--text-sm);flex-shrink:0}
+.robson-desc{font-size:var(--text-sm);line-height:1.4}
+.robson-desc strong{display:block;font-weight:600;margin-bottom:2px}
+.robson-desc span{color:var(--color-text-muted);font-size:var(--text-xs)}
+.robson-stats{text-align:right;min-width:80px}
+.robson-cs-rate{font-family:var(--font-display);font-size:var(--text-lg);
+  font-weight:700;color:var(--color-primary)}
+.robson-cs-label{font-size:.65rem;color:var(--color-text-faint)}
+
+/* ── RISK FACTORS ─────────────────────────────────────────────── */
+.rf-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp6)}
+@media(max-width:640px){.rf-grid{grid-template-columns:1fr}}
+.rf-section{background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);padding:var(--sp5)}
+.rf-section-title{font-size:var(--text-sm);font-weight:700;margin-bottom:var(--sp4);
+  display:flex;align-items:center;gap:var(--sp2);padding-bottom:var(--sp3);
+  border-bottom:1px solid var(--color-divider)}
+.rf-list{list-style:none;display:flex;flex-direction:column;gap:var(--sp3)}
+.rf-item{display:flex;align-items:flex-start;gap:var(--sp3)}
+.rf-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px}
+.rf-text{font-size:var(--text-sm);line-height:1.5}
+.rf-text strong{font-weight:600}
+.rf-or{font-size:var(--text-xs);color:var(--color-text-muted)}
+
+/* ── TREATMENT SECTION ────────────────────────────────────────── */
+.tx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--sp4)}
+.tx-card{background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);padding:var(--sp5)}
+.tx-icon{width:40px;height:40px;border-radius:var(--radius-md);display:flex;
+  align-items:center;justify-content:center;margin-bottom:var(--sp4)}
+.tx-title{font-size:var(--text-sm);font-weight:700;margin-bottom:var(--sp2)}
+.tx-desc{font-size:var(--text-xs);color:var(--color-text-muted);line-height:1.6;max-width:100%}
+
+/* ── REFERENCES ───────────────────────────────────────────────── */
+.ref-list{list-style:none;display:flex;flex-direction:column;gap:var(--sp3)}
+.ref-item{font-size:var(--text-xs);color:var(--color-text-muted);display:flex;gap:var(--sp3);
+  padding:var(--sp3) var(--sp4);background:var(--color-surface);border-radius:var(--radius-md);
+  border:1px solid var(--color-border)}
+.ref-num{color:var(--color-primary);font-weight:700;flex-shrink:0;min-width:22px}
+
+/* ── PROGRESS BARS ─────────────────────────────────────────────── */
+.bar-wrap{margin-bottom:var(--sp3)}
+.bar-label{display:flex;justify-content:space-between;font-size:var(--text-xs);
+  margin-bottom:4px;color:var(--color-text-muted)}
+.bar-label strong{color:var(--color-text)}
+.bar-track{height:10px;background:var(--color-surface-offset);border-radius:var(--radius-full);overflow:hidden}
+.bar-fill{height:100%;border-radius:var(--radius-full);transition:width .6s ease}
+
+/* ── FOOTER ───────────────────────────────────────────────────── */
+.footer{background:var(--color-surface);border-top:1px solid var(--color-divider);
+  padding:var(--sp10) 0;margin-top:var(--sp16)}
+.footer-inner{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sp8)}
+@media(max-width:640px){.footer-inner{grid-template-columns:1fr}}
+.footer-col-title{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--color-text-muted);margin-bottom:var(--sp4)}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:var(--sp3)}
+.footer-links a{font-size:var(--text-sm);color:var(--color-text-muted);text-decoration:none;
+  transition:color var(--transition)}
+.footer-links a:hover{color:var(--color-primary)}
+.footer-copy{text-align:center;font-size:var(--text-xs);color:var(--color-text-faint);
+  margin-top:var(--sp8);padding-top:var(--sp6);border-top:1px solid var(--color-divider)}
+
+/* ── ANIMATIONS ───────────────────────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.fade-up{animation:fadeUp .4s ease both}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────── */
+@media(max-width:640px){
+  .header-inner{height:56px}
+  .hero{padding:var(--sp8) 0 var(--sp6)}
+  .hero-meta{display:none}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+<!-- HEADER -->
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <svg class="logo-mark" viewBox="0 0 36 36" fill="none" aria-label="AUPFHS Logo">
+          <circle cx="18" cy="18" r="17" fill="var(--color-primary)" opacity=".12"/>
+          <path d="M18 8c-2.8 0-5 2.2-5 5 0 4.5 5 11 5 11s5-6.5 5-11c0-2.8-2.2-5-5-5z"
+            fill="var(--color-primary)" opacity=".85"/>
+          <circle cx="18" cy="13" r="2.5" fill="white"/>
+          <path d="M11 26h14M13 22h10" stroke="var(--color-primary)" stroke-width="1.5"
+            stroke-linecap="round" opacity=".6"/>
+        </svg>
+        <div class="logo-text">Pelvic Floor Risk
+          <span>AUPFHS Shared Decision Support</span>
+        </div>
+      </a>
+      <div class="header-actions">
+        <span class="disclaimer-badge">⚠ Clinical Tool — Not for Individual Management</span>
+        <button class="btn-icon" data-theme-toggle aria-label="Toggle theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content fade-up">
+      <div class="hero-eyebrow">Obstetric Pelvic Floor — Patient Decision Support</div>
+      <h1>Understanding your risk of pelvic floor trauma and long-term dysfunction</h1>
+      <p class="hero-lead">Population-based rates of acute obstetric pelvic floor trauma and long-term pelvic floor disorders, stratified by mode of birth and Robson group. Designed to support informed shared decision-making during antenatal counselling.</p>
+      <div class="hero-meta">
+        <div class="meta-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><polyline points="12 6 12 12 16 14"/></svg>
+          Data sources: AIHW 2023, Victorian PSPI 2022
+        </div>
+        <div class="meta-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Risk tool: UR-CHOICE adapted
+        </div>
+        <div class="meta-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Gestation: 38 &amp; 41 weeks
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <!-- DISCLAIMER -->
+  <div class="disclaimer-bar">
+    <h3>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Clinical Disclaimer
+    </h3>
+    <p>This tool presents <strong>population-level epidemiological data</strong> and predictive model estimates to support antenatal counselling and shared decision-making. It does <strong>not</strong> replace individualised clinical assessment. All rates are approximate and sourced from Australian (AIHW 2023, Victorian PSPI 2022) and international peer-reviewed literature. Risks vary significantly by individual patient factors, clinician skill, and service setting. <strong>Always interpret with a qualified clinician.</strong></p>
+  </div>
+
+  <!-- NAV TABS -->
+  <div class="tabs-wrap">
+    <div class="tabs" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="overview">Overview</button>
+      <button class="tab-btn" role="tab" data-tab="acute">Acute Trauma Rates</button>
+      <button class="tab-btn" role="tab" data-tab="longterm">Long-Term Dysfunction</button>
+      <button class="tab-btn" role="tab" data-tab="robson">Robson Groups</button>
+      <button class="tab-btn" role="tab" data-tab="riskfactors">Risk Factors</button>
+      <button class="tab-btn" role="tab" data-tab="calculator">Risk Estimator</button>
+      <button class="tab-btn" role="tab" data-tab="treatment">Treatment</button>
+      <button class="tab-btn" role="tab" data-tab="references">References</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- TAB: OVERVIEW -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="tab-panel active" id="tab-overview">
+    <div class="section">
+      <p class="section-title">Key population statistics</p>
+      <p class="section-subtitle">Summary of pelvic floor trauma and dysfunction rates from Australian national and Victorian state data.</p>
+
+      <div class="stat-grid">
+        <div class="stat-card bg-accent-light">
+          <div class="stat-value c-accent">~19%</div>
+          <div class="stat-label">Primiparous women sustaining levator ani injury at vaginal birth</div>
+          <div class="stat-source">DeLancey et al, AJOG 2024</div>
+        </div>
+        <div class="stat-card bg-warn-light">
+          <div class="stat-value c-warn">3.5%</div>
+          <div class="stat-label">3rd/4th degree tears (OASI) — unassisted vaginal birth, primiparae (Victoria 2022)</div>
+          <div class="stat-source">Victorian PSPI 2022</div>
+        </div>
+        <div class="stat-card bg-warn-light">
+          <div class="stat-value c-warn">4.5%</div>
+          <div class="stat-label">OASI — assisted vaginal birth, primiparae (Victoria 2022)</div>
+          <div class="stat-source">Victorian PSPI 2022</div>
+        </div>
+        <div class="stat-card bg-primary-light">
+          <div class="stat-value c-primary">40.6%</div>
+          <div class="stat-label">All births by caesarean section (Australia 2023)</div>
+          <div class="stat-source">AIHW 2023</div>
+        </div>
+        <div class="stat-card bg-violet-light">
+          <div class="stat-value c-violet">61%</div>
+          <div class="stat-label">Women reporting urinary incontinence 20–26 years after birth</div>
+          <div class="stat-source">Hagen et al, BJOG 2024</div>
+        </div>
+        <div class="stat-card bg-info-light">
+          <div class="stat-value c-info">22%</div>
+          <div class="stat-label">Women reporting faecal incontinence 20–26 years after birth</div>
+          <div class="stat-source">Hagen et al, BJOG 2024</div>
+        </div>
+        <div class="stat-card bg-success-light">
+          <div class="stat-value c-success">17%</div>
+          <div class="stat-label">Women reporting prolapse symptoms 20–26 years after birth</div>
+          <div class="stat-source">Hagen et al, BJOG 2024</div>
+        </div>
+        <div class="stat-card bg-accent-light">
+          <div class="stat-value c-accent">20%</div>
+          <div class="stat-label">Women requiring pelvic floor surgery during lifetime (US data)</div>
+          <div class="stat-source">DeLancey et al, AJOG 2024</div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- CHARTS OVERVIEW -->
+      <div class="chart-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Method of birth — Australia 2023</div>
+            <div class="card-subtitle">All births by mode (AIHW National Perinatal Data Collection 2023)</div>
+          </div>
+          <div class="chart-wrap"><canvas id="chartMOB"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Maternal age &amp; caesarean rate 2023</div>
+            <div class="card-subtitle">CS rate rises markedly with age (AIHW 2023)</div>
+          </div>
+          <div class="chart-wrap"><canvas id="chartAgeCS"></canvas></div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="card" style="margin-top:var(--sp6)">
+        <div class="card-header">
+          <div class="card-title">Has this been done before?</div>
+          <div class="card-subtitle">Summary of existing pelvic floor risk and shared decision-making tools</div>
+        </div>
+        <div class="risk-table-wrap">
+          <table class="risk-table">
+            <thead><tr>
+              <th>Tool / Initiative</th><th>Type</th><th>Status</th><th>Key Limitation</th>
+            </tr></thead>
+            <tbody>
+              <tr><td><strong>UR-CHOICE</strong> (riskcalc.org)</td><td>Individual risk calculator — 12 &amp; 20-year PFD risk</td><td><span class="risk-tag rt-low">AVAILABLE</span></td><td>Does not include levator injury; mode-of-birth nuance limited</td></tr>
+              <tr><td><strong>NICE PDAs</strong> (UK)</td><td>Patient decision aids — pelvic floor surgery, prolapse, SUI</td><td><span class="risk-tag rt-low">AVAILABLE</span></td><td>Post-treatment; not antenatal/mode-of-birth</td></tr>
+              <tr><td><strong>Victorian Better Births Collaborative</strong></td><td>Quality improvement bundle; data reporting</td><td><span class="risk-tag rt-mod">PARTIAL</span></td><td>Service-facing, not patient-facing risk display</td></tr>
+              <tr><td><strong>OASI Care Bundle (RCOG/RCM)</strong></td><td>Clinical intervention bundle + antenatal info</td><td><span class="risk-tag rt-low">AVAILABLE</span></td><td>Focuses on OASI only, not levator/POP/UI long-term</td></tr>
+              <tr><td><strong>AIHW / Victorian PSPI dashboards</strong></td><td>Population-level data reporting</td><td><span class="risk-tag rt-low">AVAILABLE</span></td><td>Clinician/service facing; not patient-friendly risk stratification</td></tr>
+              <tr><td><strong>This dashboard (AUPFHS)</strong></td><td>Integrated patient-facing tool — acute trauma + long-term + Robson + risk calculator</td><td><span class="risk-tag rt-high">NEW</span></td><td>Rates not yet validated to local Bayside/Victoria service; local data integration pending</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--sp4);">
+          <strong>Conclusion:</strong> No single publicly available tool combines (1) population-level Australian obstetric trauma rates, (2) Robson/mode-of-birth stratification, (3) long-term PFD outcomes, and (4) patient-accessible individual risk estimation in one interface. This dashboard fills that gap.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- TAB: ACUTE TRAUMA RATES -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-acute">
+    <div class="section">
+      <p class="section-title">Acute obstetric pelvic floor trauma</p>
+      <p class="section-subtitle">Rates of levator ani injury, OASI (3rd/4th degree tears), and significant perineal trauma by mode of birth. Data from Australian and international sources.</p>
+
+      <!-- Levator injury visual bars -->
+      <div class="card" style="margin-bottom:var(--sp6)">
+        <div class="card-header">
+          <div class="card-title c-accent">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Levator ani muscle injury by mode of birth
+          </div>
+          <div class="card-subtitle">Rates from ultrasound/MRI studies; permanent injury. Sources: DeLancey AJOG 2024, Wong et al. Eur J Obstet 2024.</div>
+        </div>
+        <div class="bar-wrap"><div class="bar-label"><strong>Rotational forceps</strong><span>~50–65%</span></div><div class="bar-track"><div class="bar-fill" style="width:60%;background:var(--color-accent)"></div></div></div>
+        <div class="bar-wrap"><div class="bar-label"><strong>Non-rotational forceps</strong><span>~35–50%</span></div><div class="bar-track"><div class="bar-fill" style="width:42%;background:var(--color-accent)"></div></div></div>
+        <div class="bar-wrap"><div class="bar-label"><strong>Vacuum extraction</strong><span>~18–25%</span></div><div class="bar-track"><div class="bar-fill" style="width:22%;background:var(--color-warn)"></div></div></div>
+        <div class="bar-wrap"><div class="bar-label"><strong>Spontaneous vaginal birth (primipara)</strong><span>~10–19%</span></div><div class="bar-track"><div class="bar-fill" style="width:15%;background:var(--color-warn)"></div></div></div>
+        <div class="bar-wrap"><div class="bar-label"><strong>Spontaneous vaginal birth (multipara)</strong><span>~5–8%</span></div><div class="bar-track"><div class="bar-fill" style="width:7%;background:var(--color-success)"></div></div></div>
+        <div class="bar-wrap"><div class="bar-label"><strong>Caesarean section (any)</strong><span>~0–1%</span></div><div class="bar-track"><div class="bar-fill" style="width:1%;background:var(--color-success)"></div></div></div>
+        <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--sp4);">
+          ⚠ Levator ani injury is permanent and does not recover. Forceps OR &asymp; 5.9 vs spontaneous birth. Vacuum OR &asymp; 1.5–2.0 vs spontaneous birth. Occiput posterior position OR &asymp; 3.9.
+        </p>
+      </div>
+
+      <!-- OASI by mode chart + table -->
+      <div class="chart-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">OASI rate (3rd &amp; 4th degree tears) by mode</div>
+            <div class="card-subtitle">Victorian PSPI 2022 &amp; international literature</div>
+          </div>
+          <div class="chart-wrap"><canvas id="chartOASI"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Victorian PSPI 2022 — Primiparae tears trend</div>
+            <div class="card-subtitle">Unassisted &amp; assisted vaginal births 2018–2022</div>
+          </div>
+          <div class="chart-wrap"><canvas id="chartPSPITrend"></canvas></div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- MODE OF BIRTH TRAUMA TABLE -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Acute pelvic floor trauma by mode of birth — summary table</div>
+          <div class="card-subtitle">Rates are approximate population averages; primiparous women unless noted. All rates shown as percentages (%).</div>
+        </div>
+        <div class="risk-table-wrap">
+          <table class="risk-table">
+            <thead><tr>
+              <th>Mode of Birth</th>
+              <th>Levator Ani Injury</th>
+              <th>OASI (3°/4°)</th>
+              <th>2° Perineal Tear</th>
+              <th>Perineal Intact</th>
+              <th>Overall PF Trauma Risk</th>
+            </tr></thead>
+            <tbody>
+              <tr><td><strong>Spontaneous SVB — Primipara</strong></td><td>10–19%</td><td>3.0–4.2%</td><td>45–55%</td><td>15–25%</td><td class=""><span class="risk-tag rt-mod">MODERATE</span></td></tr>
+              <tr><td><strong>Spontaneous SVB — Multipara</strong></td><td>5–8%</td><td>0.7–1.1%</td><td>25–35%</td><td>45–55%</td><td><span class="risk-tag rt-low">LOW–MOD</span></td></tr>
+              <tr><td><strong>Non-rotational low vacuum (primipara)</strong></td><td>18–25%</td><td>4–6%</td><td>50–60%</td><td>5–10%</td><td><span class="risk-tag rt-mod">MODERATE</span></td></tr>
+              <tr><td><strong>Non-rotational low forceps (primipara)</strong></td><td>35–50%</td><td>5–9%</td><td>55–65%</td><td>3–7%</td><td><span class="risk-tag rt-high">HIGH</span></td></tr>
+              <tr><td><strong>Rotational/mid-cavity forceps</strong></td><td>50–65%</td><td>8–15%</td><td>60–70%</td><td>&lt;3%</td><td><span class="risk-tag rt-vhigh">VERY HIGH</span></td></tr>
+              <tr><td><strong>2nd stage emergency CS</strong></td><td>5–12%</td><td>0–1%</td><td>0–5%</td><td>90–95%</td><td><span class="risk-tag rt-mod">LOW–MOD</span></td></tr>
+              <tr><td><strong>1st stage emergency CS</strong></td><td>&lt;2%</td><td>&lt;0.5%</td><td>0%</td><td>100%</td><td><span class="risk-tag rt-low">LOW</span></td></tr>
+              <tr><td><strong>Elective CS (before labour)</strong></td><td>&lt;1%</td><td>0%</td><td>0%</td><td>100%</td><td><span class="risk-tag rt-low">LOWEST</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- GESTATION 38 vs 41 weeks -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Effect of gestation at birth — 38 vs 41 weeks</div>
+          <div class="card-subtitle">Induction at 38–39 weeks may reduce levator injury risk via smaller fetal head circumference</div>
+        </div>
+        <div class="risk-table-wrap">
+          <table class="risk-table">
+            <thead><tr>
+              <th>Gestation</th><th>Mean Fetal Head Circumference</th><th>Levator Ani Injury Risk</th><th>OASI Risk (primipara)</th><th>Key Evidence</th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>38 weeks</strong></td>
+                <td>33.0–33.5 cm</td>
+                <td><span class="risk-tag rt-mod">Reduced (vs 41 wks)</span></td>
+                <td><span class="risk-tag rt-mod">Slightly reduced</span></td>
+                <td>Burkett et al. Int Urogynecol J 2022; DeLancey 2024 (capacity-demand model)</td>
+              </tr>
+              <tr>
+                <td><strong>39 weeks (standard)</strong></td>
+                <td>34.0–34.5 cm</td>
+                <td><span class="risk-tag rt-mod">Baseline</span></td>
+                <td><span class="risk-tag rt-mod">Baseline</span></td>
+                <td>Reference standard (ARRIVE trial; GROBMAN NEJM 2018)</td>
+              </tr>
+              <tr>
+                <td><strong>41 weeks</strong></td>
+                <td>35.0–36.0 cm</td>
+                <td><span class="risk-tag rt-high">Increased — HC &gt;35.5cm: OR 3.3</span></td>
+                <td><span class="risk-tag rt-high">Increased</span></td>
+                <td>Valsky et al. AJOG 2009; DeLancey 2024</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--sp4)">
+          <strong>Note:</strong> The capacity-demand model (DeLancey/Tracy) predicts that women with a fetal head circumference &gt;35.5 cm have an OR 3.3 for levator ani injury. Head circumference increases ~0.5 cm per week at term. Early induction (38–39 wks) in suspected macrosomia or high-risk women is a clinically plausible prevention strategy.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- TAB: LONG-TERM DYSFUNCTION -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-longterm">
+    <div class="section">
+      <p class="section-title">Long-term pelvic floor dysfunction</p>
+      <p class="section-subtitle">Prevalence of urinary incontinence, anal incontinence, pelvic organ prolapse, and sexual dysfunction — up to 26 years after birth, by mode of delivery.</p>
+
+      <div class="stat-grid" style="margin-bottom:var(--sp8)">
+        <div class="stat-card bg-violet-light">
+          <div class="stat-value c-violet">33%</div>
+          <div class="stat-label">Stress urinary incontinence in women aged 20–39</div>
+          <div class="stat-source">NHANES 2017–18, Deniz et al 2026</div>
+        </div>
+        <div class="stat-card bg-violet-light">
+          <div class="stat-value c-violet">51%</div>
+          <div class="stat-label">Stress UI in women aged 40–59</div>
+          <div class="stat-source">NHANES 2017–18</div>
+        </div>
+        <div class="stat-card bg-warn-light">
+          <div class="stat-value c-warn">8%</div>
+          <div class="stat-label">Anal incontinence (community prevalence)</div>
+          <div class="stat-source">Mack et al, Clin Gastroenterol 2024</div>
+        </div>
+        <div class="stat-card bg-accent-light">
+          <div class="stat-value c-accent">7.3×</div>
+          <div class="stat-label">Increased risk of POP with levator ani avulsion (OR)</div>
+          <div class="stat-source">DeLancey AJOG 2024</div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">PFD prevalence at 12 vs 26 years after birth</div>
+            <div class="card-subtitle">PROLONGS study longitudinal data (Hagen et al, BJOG 2024)</div>
+          </div>
+          <div class="chart-wrap"><canvas id="chartLongTerm"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Urinary incontinence by delivery mode history</div>
+            <div class="card-subtitle">26-year follow-up (Hagen et al, BJOG 2024; PROLONGS)</div>
+          </div>
+          <div class="chart-wrap"><canvas id="chartUIMOB"></canvas></div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Long-term PFD by mode of birth — summary rates</div>
+          <div class="card-subtitle">Approximate lifetime cumulative risk at 12–26 year follow-up. Sources: PROLONGS, Blomquist JAMA 2018, Leijonhufvud AJOG 2011.</div>
+        </div>
+        <div class="risk-table-wrap">
+          <table class="risk-table">
+            <thead><tr>
+              <th>Mode of Birth</th>
+              <th>Urinary Incontinence</th>
+              <th>Anal Incontinence</th>
+              <th>Pelvic Organ Prolapse</th>
+              <th>Sexual Dysfunction</th>
+              <th>Risk of Pelvic Surgery</th>
+            </tr></thead>
+            <tbody>
+              <tr><td><strong>Exclusive CS</strong></td><td>~40–45% (lower)</td><td>~10–15%</td><td>~8–12%</td><td>~10–15%</td><td>~10%</td></tr>
+              <tr><td><strong>Spontaneous vaginal only</strong></td><td>~55–65%</td><td>~18–22%</td><td>~15–20%</td><td>~15–20%</td><td>~15–20%</td></tr>
+              <tr><td><strong>Any vacuum delivery</strong></td><td>~62–68%</td><td>~20–25%</td><td>~18–24%</td><td>~18–22%</td><td>~18–22%</td></tr>
+              <tr><td><strong>Any forceps delivery</strong></td><td>~65–72%</td><td>~28–35%</td><td>~22–30%</td><td>~20–30%</td><td>~22–28%</td></tr>
+              <tr><td><strong>OASI at any birth</strong></td><td>~60–70%</td><td>~30–45%</td><td>~20–28%</td><td>~25–35%</td><td>~25–30%</td></tr>
+              <tr><td><strong>Mixed (CS + vaginal)</strong></td><td>~55–62%</td><td>~16–22%</td><td>~14–20%</td><td>~15–22%</td><td>~15–18%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--sp4)">
+          <strong>Important context:</strong> These rates represent cumulative risk over 20–26 years and include age-related changes. Many women without any obstetric injury will develop PFD due to ageing, BMI, and other factors. Caesarean section reduces but does not eliminate PFD risk, and carries its own maternal and future pregnancy risks.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- TAB: ROBSON GROUPS -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-robson">
+    <div class="section">
+      <p class="section-title">Robson 10-group classification</p>
+      <p class="section-subtitle">Caesarean section rates by Robson group — Australia 2023 (AIHW National Perinatal Data Collection). Robson group is the WHO-endorsed global standard for analysing CS rates.</p>
+
+      <div class="robson-grid">
+        <div class="robson-row">
+          <div class="robson-num">1</div>
+          <div class="robson-desc">
+            <strong>Nulliparous — Singleton, cephalic, ≥37 wks — Spontaneous labour</strong>
+            <span>Lowest-risk group; primary driver of overall CS rate. Key group for pelvic floor counselling.</span>
+          </div>
+          <div class="robson-stats">
+            <div class="robson-cs-rate">19.2%</div>
+            <div class="robson-cs-label">CS rate (Aus 2023)</div>
+          </div>
+        </div>
+        <div class="robson-row">
+          <div class="robson-num">2</div>
+          <div class="robson-desc">
+            <strong>Nulliparous — Singleton, cephalic, ≥37 wks — Induced or pre-labour CS</strong>
+            <span>Induction &amp; pre-labour CS. Higher CS rate reflects failed induction &amp; elective CS requests.</span>
+          </div>
+          <div class="robson-stats">
+            <div class="robson-cs-rate">53.6%</div>
+            <div class="robson-cs-label">CS rate (Aus 2023)</div>
+          </div>
+        </div>
+        <div class="robson-row">
+          <div class="robson-num">3</div>
+          <div class="robson-desc">
+            <strong>Multiparous (no prev CS) — Singleton, cephalic, ≥37 wks — Spontaneous labour</strong>
+            <span>Low-risk multiparous women. OASI risk 0.7–1.1%.</span>
+          </div>
+          <div class="robson-stats">
+            <div class="robson-cs-rate">3.2%</div>
+            <div class="robson-cs-label">CS rate (Aus 2023)</div>
+          </div>
+        </div>
+        <div class="robson-row">
+          <div class="robson-num">4</div>
+          <div class="robson-desc">
+            <strong>Multiparous (no prev CS) — Singleton, cephalic, ≥37 wks — Induced or pre-labour CS</strong>
+            <span>Induced multiparous. Includes elective CS in parous women.</span>
+          </div>
+          <div class="robson-stats">
+            <div class="robson-cs-rate">19.1%</div>
+            <div class="robson-cs-label">CS rate (Aus 2023)</div>
+          </div>
+        </div>
+        <div class="robson-row">
+          <div class="robson-num">5</div>
+          <div class="robson-desc">
+            <strong>Previous CS — Singleton, cephalic, ≥37 wks</strong>
+            <span>VBAC candidates &amp; repeat CS. High repeat CS rate. Important for counselling re: VBAC vs elective CS risks.</span>
+          </div>
+          <div class="robson-stats">
+            <div class="robson-cs-rate">86.7%</div>
+            <div class="robson-cs-label">CS rate (Aus 2023)</div>
+          </div>
+        </div>
+        <div class="robson-row">
+          <div class="robson-num">6</div>
+          <div class="robson-desc">
+            <strong>Nulliparous — Singleton, breech</strong>
+            <span>Almost all by CS. Small group; breech presentation.</span>
+          </div>
+          <div class="robson-stats">
+            <div class="robson-cs-rate">91.8%</div>
+            <div class="robson-cs-label">CS rate (Aus 2023)</div>
+          </div>
+        </div>
+        <div class="robson-row">
+          <div class="robson-num">7</div>
+          <div class="robson-desc">
+            <strong>Multiparous — Singleton, breech (± prev CS)</strong>
+            <span>Parous breech; near-universal CS.</span>
+          </div>
+          <div class="robson-stats">
+            <div class="robson-cs-rate">88.3%</div>
+            <div class="robson-cs-label">CS rate (Aus 2023)</div>
+          </div>
+        </div>
+        <div class="robson-row">
+          <div class="robson-num">8</div>
+          <div class="robson-desc">
+            <strong>Multiple pregnancy (± prev CS)</strong>
+            <span>Twin and higher-order births; high CS rate.</span>
+          </div>
+          <div class="robson-stats">
+            <div class="robson-cs-rate">74.6%</div>
+            <div class="robson-cs-label">CS rate (Aus 2023)</div>
+          </div>
+        </div>
+        <div class="robson-row">
+          <div class="robson-num">9</div>
+          <div class="robson-desc">
+            <strong>Singleton — Transverse/oblique lie (± prev CS)</strong>
+            <span>Abnormal lie; high CS.</span>
+          </div>
+          <div class="robson-stats">
+            <div class="robson-cs-rate">40.8%</div>
+            <div class="robson-cs-label">CS rate (Aus 2023)</div>
+          </div>
+        </div>
+        <div class="robson-row">
+          <div class="robson-num">10</div>
+          <div class="robson-desc">
+            <strong>Singleton, cephalic, &lt;37 weeks (± prev CS)</strong>
+            <span>Preterm births; significant obstetric complexity.</span>
+          </div>
+          <div class="robson-stats">
+            <div class="robson-cs-rate">45.9%</div>
+            <div class="robson-cs-label">CS rate (Aus 2023)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Victorian PSPI 2022 — Key primiparae indicators by Robson group</div>
+          <div class="card-subtitle">Public and private hospital statewide rates (Victorian Perinatal Data Collection 2022)</div>
+        </div>
+        <div class="risk-table-wrap">
+          <table class="risk-table">
+            <thead><tr>
+              <th>Indicator</th><th>Statewide 2022</th><th>Public Hospitals</th><th>Private Hospitals</th><th>Trend</th>
+            </tr></thead>
+            <tbody>
+              <tr><td>Induction of labour — standard primiparae (1a)</td><td>17.3%</td><td>12.4%</td><td>24.0%</td><td>↑ (was 15.0% in 2021)</td></tr>
+              <tr><td>CS rate — Robson Group 1 (1bi)</td><td>19.6%</td><td>18.2%</td><td>26.1%</td><td>↑ (was 18.3%)</td></tr>
+              <tr><td>CS rate — Modified Robson Group 2 (induced) (1bii)</td><td>32.6%</td><td>33.6%</td><td>29.7%</td><td>Stable</td></tr>
+              <tr><td>OASI — unassisted vaginal birth, primipara (1ci)</td><td>3.5%</td><td>4.2%</td><td>0.4%</td><td>↓ (was 4.0%)</td></tr>
+              <tr><td>OASI — assisted vaginal birth, primipara (1cii)</td><td>4.5%</td><td>5.2%</td><td>2.8%</td><td>↓ (was 5.0%)</td></tr>
+              <tr><td>Episiotomy — unassisted vaginal birth (1di)</td><td>24.7%</td><td>24.7%</td><td>26.7%</td><td>↓ (was 26.6%)</td></tr>
+              <tr><td>Episiotomy — assisted vaginal birth (1dii)</td><td>85.8%</td><td>90.9%</td><td>72.2%</td><td>Stable</td></tr>
+              <tr><td>Planned VBAC rate (4a)</td><td>21.5%</td><td>26.5%</td><td>9.8%</td><td>Stable–declining</td></tr>
+              <tr><td>Achieved VBAC rate (4b)</td><td>53.4%</td><td>53.1%</td><td>50.4%</td><td>↓ slightly</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- TAB: RISK FACTORS -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-riskfactors">
+    <div class="section">
+      <p class="section-title">Individual risk factors</p>
+      <p class="section-subtitle">Recognised prelabour and intrapartum risk factors for obstetric pelvic floor trauma and long-term dysfunction. Odds ratios from peer-reviewed meta-analyses.</p>
+
+      <div class="rf-grid">
+        <!-- PRELABOUR -->
+        <div class="rf-section">
+          <div class="rf-section-title c-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            Pre-labour risk factors
+          </div>
+          <ul class="rf-list">
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-accent)"></div>
+              <div class="rf-text">
+                <strong>Nulliparity (first vaginal birth)</strong>
+                <div class="rf-or">Highest overall risk group; levator injury rate 10–19% at SVB vs ~5% multipara</div>
+              </div>
+            </li>
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-accent)"></div>
+              <div class="rf-text">
+                <strong>Maternal age &gt;35 at first birth</strong>
+                <div class="rf-or">Significantly increased risk of levator avulsion (OR ↑); less tissue elasticity</div>
+              </div>
+            </li>
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-warn)"></div>
+              <div class="rf-text">
+                <strong>Short maternal height (&lt;160 cm) + fetal weight &gt;4 kg</strong>
+                <div class="rf-or">Combined effect — small capacity, large demand (capacity-demand model)</div>
+              </div>
+            </li>
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-warn)"></div>
+              <div class="rf-text">
+                <strong>High BMI (&gt;30 kg/m²)</strong>
+                <div class="rf-or">POP risk OR 1.75 (95% CI 1.17–2.62); UI risk elevated at all ages</div>
+              </div>
+            </li>
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-warn)"></div>
+              <div class="rf-text">
+                <strong>Estimated fetal weight &gt;4000g (macrosomia)</strong>
+                <div class="rf-or">Head circumference &gt;35.5 cm: OR 3.3 for levator injury. AIHW: 12–17% of term births &gt;4000g</div>
+              </div>
+            </li>
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-primary)"></div>
+              <div class="rf-text">
+                <strong>Previous OASI — stratified by findings</strong>
+                <div class="rf-or">Asymptomatic, normal manometry, no residual defect: vaginal birth reasonable. EAS defect + reduced squeeze pressure (&lt;20 mmHg): elective CS recommended (Thakar &amp; Sultan 2025)</div>
+              </div>
+            </li>
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-primary)"></div>
+              <div class="rf-text">
+                <strong>Pre-existing urinary or faecal incontinence in pregnancy</strong>
+                <div class="rf-or">UR-CHOICE factor U; increases post-delivery PFD risk significantly</div>
+              </div>
+            </li>
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-text-muted)"></div>
+              <div class="rf-text">
+                <strong>Family history of PFD</strong>
+                <div class="rf-or">Polygenic risk scores for POP comparable to clinical risk factors (Pujol-Gualdo et al, Nat Commun 2022)</div>
+              </div>
+            </li>
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-text-muted)"></div>
+              <div class="rf-text">
+                <strong>Gestational diabetes / macrosomia</strong>
+                <div class="rf-or">Increased fetal size increases demand on levator ani. Custom growth charts vs Hadlock methods differ in detection rate.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- INTRAPARTUM -->
+        <div class="rf-section">
+          <div class="rf-section-title c-accent">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Intrapartum risk factors
+          </div>
+          <ul class="rf-list">
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-accent)"></div>
+              <div class="rf-text">
+                <strong>Forceps delivery (any type)</strong>
+                <div class="rf-or">OR 5.9 for levator avulsion vs spontaneous birth. Highest single modifiable risk.</div>
+              </div>
+            </li>
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-accent)"></div>
+              <div class="rf-text">
+                <strong>Persistent occiput posterior at full dilatation</strong>
+                <div class="rf-or">OR 3.9 for levator injury; larger presenting diameter. Manual rotation reduces risk.</div>
+              </div>
+            </li>
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-warn)"></div>
+              <div class="rf-text">
+                <strong>Prolonged second stage of labour</strong>
+                <div class="rf-or">Independent risk factor for levator avulsion, OASI and urinary incontinence</div>
+              </div>
+            </li>
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-warn)"></div>
+              <div class="rf-text">
+                <strong>Vacuum delivery</strong>
+                <div class="rf-or">OR ~1.5–2.5 for levator injury vs SVB. Significantly less than forceps. Preferred over forceps for pelvic floor protection.</div>
+              </div>
+            </li>
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-warn)"></div>
+              <div class="rf-text">
+                <strong>Epidural analgesia</strong>
+                <div class="rf-or">Associated with prolonged second stage and increased OVD rates; indirect OASI risk factor</div>
+              </div>
+            </li>
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-success)"></div>
+              <div class="rf-text">
+                <strong>Protective: Bundle of care (OASI care bundle)</strong>
+                <div class="rf-or">4 elements: antenatal info, manual perineal protection, mediolateral episiotomy at 60° when indicated, systematic post-birth exam. OASI rate reduced from 3.3% to 3.0% (UK multicenter, Deniz et al 2026)</div>
+              </div>
+            </li>
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-success)"></div>
+              <div class="rf-text">
+                <strong>Protective: Warm compresses &amp; perineal massage</strong>
+                <div class="rf-or">Warm compresses: RR 0.46 for OASI. Perineal massage: RR 0.49 for severe perineal trauma.</div>
+              </div>
+            </li>
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-success)"></div>
+              <div class="rf-text">
+                <strong>Protective: Vacuum preferred over forceps when OVD needed</strong>
+                <div class="rf-or">Levator avulsion 18% vs 49% (forceps vs vacuum; Handa et al 2015). Policy: offer vacuum first for uncomplicated OVD.</div>
+              </div>
+            </li>
+            <li class="rf-item">
+              <div class="rf-dot" style="background:var(--color-info)"></div>
+              <div class="rf-text">
+                <strong>Onset of labour: spontaneous vs induced</strong>
+                <div class="rf-or">Induced labour: CS rate ~23.6%; spontaneous: ~15.3% (AIHW 2023). Induction at 39 wks may reduce injury via smaller head.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- TAB: RISK ESTIMATOR -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-calculator">
+    <div class="section">
+      <p class="section-title">Individual risk estimator</p>
+      <p class="section-subtitle">Enter patient characteristics to generate a personalised risk profile based on published population risk factors. Adapted from UR-CHOICE methodology and DeLancey capacity-demand model. <strong>This tool does not replace clinical judgement or individual assessment.</strong></p>
+
+      <div class="calc-grid">
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Pre-labour factors</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inp-age">Maternal age (years)</label>
+              <input class="form-control" type="number" id="inp-age" min="15" max="55" value="30" placeholder="e.g. 30">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="inp-height">Height (cm)</label>
+                <input class="form-control" type="number" id="inp-height" min="140" max="200" value="165" placeholder="e.g. 165">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="inp-weight">Weight (kg)</label>
+                <input class="form-control" type="number" id="inp-weight" min="40" max="150" value="70" placeholder="e.g. 70">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inp-parity">Parity / Robson group</label>
+              <select class="form-control" id="inp-parity">
+                <option value="nullip">Nulliparous (Robson 1/2) — First vaginal birth</option>
+                <option value="multip">Multiparous — Previous vaginal birth (Robson 3/4)</option>
+                <option value="vbac">VBAC — First vaginal birth after 1 CS (Robson 5)</option>
+                <option value="multip2plus">Multiparous — ≥2 previous vaginal births</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inp-efw">Estimated fetal weight at 36 weeks (grams)</label>
+              <div class="form-hint">From ultrasound. Normal term ~3300g; macrosomia &gt;4000g</div>
+              <input class="form-control" type="number" id="inp-efw" min="2000" max="6000" value="3300" placeholder="e.g. 3300">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inp-gestation">Planned gestation at birth</label>
+              <select class="form-control" id="inp-gestation">
+                <option value="38">38 weeks (early term)</option>
+                <option value="39" selected>39 weeks (full term standard)</option>
+                <option value="40">40 weeks</option>
+                <option value="41">41 weeks (post-dates)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inp-oasi-hx">Previous OASI history</label>
+              <select class="form-control" id="inp-oasi-hx">
+                <option value="none">None / nulliparous</option>
+                <option value="asymptomatic">Previous OASI — Asymptomatic, normal manometry, no defect</option>
+                <option value="symptomatic">Previous OASI — Symptomatic or low pressures or residual defect</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inp-ui-preg">UI/FI before or during pregnancy?</label>
+              <select class="form-control" id="inp-ui-preg">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:var(--sp5)">
+            <div class="card-header">
+              <div class="card-title">Intrapartum factors</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inp-mob">Planned/actual mode of birth</label>
+              <select class="form-control" id="inp-mob">
+                <option value="svb">Spontaneous vaginal birth</option>
+                <option value="vacuum">Non-rotational vacuum (low/outlet)</option>
+                <option value="forceps-low">Non-rotational low forceps</option>
+                <option value="forceps-rot">Rotational / mid-cavity forceps</option>
+                <option value="cs2nd">Emergency CS — 2nd stage</option>
+                <option value="cs1st">Emergency CS — 1st stage</option>
+                <option value="elective-cs">Elective (pre-labour) CS</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inp-op">Occiput posterior at full dilatation?</label>
+              <select class="form-control" id="inp-op">
+                <option value="no">No / unknown</option>
+                <option value="yes">Yes — persistent OP</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inp-bundle">OASI care bundle applied?</label>
+              <select class="form-control" id="inp-bundle">
+                <option value="yes">Yes — full OASI bundle</option>
+                <option value="no">No / not documented</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:var(--sp3);margin-top:var(--sp4)">
+              <button class="btn-primary" onclick="calculateRisk()">Calculate risk</button>
+              <button class="btn-outline" onclick="resetCalc()">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RESULTS PANEL -->
+        <div>
+          <div class="result-panel hidden" id="result-panel">
+            <div style="display:flex;align-items:center;gap:var(--sp3);margin-bottom:var(--sp5)">
+              <div id="result-risk-badge" class="risk-tag" style="font-size:var(--text-sm);padding:4px 14px"></div>
+              <div>
+                <div style="font-size:var(--text-base);font-weight:700" id="result-overall-label">Overall risk profile</div>
+                <div style="font-size:var(--text-xs);color:var(--color-text-muted)" id="result-patient-summary"></div>
+              </div>
+            </div>
+
+            <div class="result-grid" id="result-grid"></div>
+
+            <div style="margin-top:var(--sp6)">
+              <div style="font-size:var(--text-sm);font-weight:600;margin-bottom:var(--sp3)">Key considerations for counselling</div>
+              <ul id="result-notes" style="list-style:none;display:flex;flex-direction:column;gap:var(--sp2)"></ul>
+            </div>
+
+            <div style="margin-top:var(--sp6);padding:var(--sp4);background:var(--color-primary-light);border-radius:var(--radius-md)">
+              <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--sp2)">For validated 12 &amp; 20-year individual PFD risk prediction:</div>
+              <a href="https://riskcalc.org/UR_CHOICE/" target="_blank" rel="noopener noreferrer" class="ur-choice-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Open UR-CHOICE calculator (riskcalc.org)
+              </a>
+            </div>
+          </div>
+
+          <div id="calc-placeholder" class="card" style="text-align:center;padding:var(--sp16) var(--sp8);color:var(--color-text-muted)">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto var(--sp4);opacity:.4">
+              <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+            <p style="max-width:100%">Complete the form and click <strong>Calculate risk</strong> to generate a patient-specific pelvic floor risk profile.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- TAB: TREATMENT -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-treatment">
+    <div class="section">
+      <p class="section-title">Prevention &amp; treatment</p>
+      <p class="section-subtitle">Evidence-based interventions for pelvic floor trauma prevention and long-term dysfunction management.</p>
+
+      <div class="tx-grid">
+        <div class="tx-card bg-success-light">
+          <div class="tx-icon bg-success-light c-success" style="border:1.5px solid color-mix(in oklab,var(--color-success) 30%,transparent)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <div class="tx-title">Pelvic floor muscle training (PFMT)</div>
+          <div class="tx-desc">Grade A evidence. Reduces UI risk in pregnancy/postpartum (Cochrane). Post-partum PFMT reduces UI odds by 37%, POP by 56%. Refer to physiotherapy from 2–6 weeks post-birth.</div>
+        </div>
+        <div class="tx-card bg-primary-light">
+          <div class="tx-icon bg-primary-light c-primary" style="border:1.5px solid color-mix(in oklab,var(--color-primary) 30%,transparent)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+          </div>
+          <div class="tx-title">OASI care bundle (intrapartum)</div>
+          <div class="tx-desc">4 elements: antenatal education, manual perineal protection, mediolateral episiotomy at 60° when indicated, systematic post-birth perineal exam. Reduces OASI rate significantly (RCOG/RCM).</div>
+        </div>
+        <div class="tx-card bg-warn-light">
+          <div class="tx-icon bg-warn-light c-warn" style="border:1.5px solid color-mix(in oklab,var(--color-warn) 30%,transparent)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <div class="tx-title">Antenatal perineal massage (&gt;34 weeks)</div>
+          <div class="tx-desc">RR 0.49 for severe perineal trauma. Reduces 3rd/4th degree tears and episiotomy. Recommended from 34 weeks gestation, self-administered or partner-administered daily for 5–10 minutes.</div>
+        </div>
+        <div class="tx-card bg-info-light">
+          <div class="tx-icon bg-info-light c-info" style="border:1.5px solid color-mix(in oklab,var(--color-info) 30%,transparent)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 3.08 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+          <div class="tx-title">Postpartum pelvic floor clinic</div>
+          <div class="tx-desc">Multidisciplinary team (urogynaecologist, physio, nurse). Early identification (within 2–6 weeks). Referral priority for: difficult birth, definite symptoms (pain, incontinence, pressure), OASI repair, levator avulsion.</div>
+        </div>
+        <div class="tx-card bg-violet-light">
+          <div class="tx-icon bg-violet-light c-violet" style="border:1.5px solid color-mix(in oklab,var(--color-violet) 30%,transparent)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <div class="tx-title">Conservative management (UI/POP)</div>
+          <div class="tx-desc">Bladder training, pelvic floor physiotherapy (59–80% symptom improvement), vaginal pessary (for POP), weight loss (5% reduction → ~50% decrease in UI episodes), topical oestrogen post-menopause.</div>
+        </div>
+        <div class="tx-card bg-accent-light">
+          <div class="tx-icon bg-accent-light c-accent" style="border:1.5px solid color-mix(in oklab,var(--color-accent) 30%,transparent)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div class="tx-title">Surgical treatment</div>
+          <div class="tx-desc">Mid-urethral sling (SUI), colposuspension (cystocele), sacrocolpopexy (vault prolapse), OASI repair (immediate). ~20% of women require pelvic surgery in lifetime. Failure rates higher with levator avulsion present.</div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Elective CS decision framework for previous OASI</div>
+          <div class="card-subtitle">Based on Thakar &amp; Sultan 2025 (Deniz et al, Acta Obstet 2026)</div>
+        </div>
+        <div class="risk-table-wrap">
+          <table class="risk-table">
+            <thead><tr><th>Previous OASI findings</th><th>Symptoms</th><th>Manometry</th><th>Imaging</th><th>Recommended Mode</th></tr></thead>
+            <tbody>
+              <tr><td>Grade 3a tear, healed well</td><td>Asymptomatic</td><td>Normal</td><td>No residual defect</td><td><span class="risk-tag rt-low">Vaginal birth appropriate</span></td></tr>
+              <tr><td>Grade 3b/3c or 4th degree</td><td>Asymptomatic</td><td>Normal squeeze pressure</td><td>Minor defect only</td><td><span class="risk-tag rt-mod">Individualised counselling</span></td></tr>
+              <tr><td>Any grade</td><td>Faecal/flatal incontinence</td><td>Reduced (ISP &lt;20 mmHg)</td><td>EAS defect present</td><td><span class="risk-tag rt-vhigh">Elective CS recommended</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- TAB: REFERENCES -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-references">
+    <div class="section">
+      <p class="section-title">Data sources &amp; references</p>
+      <p class="section-subtitle">All rates and recommendations are sourced from peer-reviewed literature and official data collections. This dashboard was developed by AUPFHS for use at main.thinhalo.com.</p>
+
+      <ul class="ref-list">
+        <li class="ref-item"><div class="ref-num">1</div><div>DeLancey JOL, Masteling M, Pipitone F, et al. Pelvic floor injury during vaginal birth is life-altering and preventable — what can we do about it? <em>Am J Obstet Gynecol</em> 2024;230(3):279–294.e2.</div></li>
+        <li class="ref-item"><div class="ref-num">2</div><div>Deniz M, Wirth L, Beilecke K, Tunn R, Huebner M. Female pelvic floor protection — where do we have to go? <em>Acta Obstet Gynecol Scand</em> 2026. DOI: 10.1111/aogs.70194.</div></li>
+        <li class="ref-item"><div class="ref-num">3</div><div>Hagen S, Sellers C, Elders A, et al. Urinary incontinence, faecal incontinence and pelvic organ prolapse symptoms 20–26 years after childbirth. <em>BJOG</em> 2024;131(13):1815–1823.</div></li>
+        <li class="ref-item"><div class="ref-num">4</div><div>Kearney R. Do we have the evidence to produce tools to enable the identification and... <em>Neurourology and Urodynamics</em> 2025. DOI: 10.1002/nau.70019.</div></li>
+        <li class="ref-item"><div class="ref-num">5</div><div>Safer Care Victoria. <em>Victorian Perinatal Services Performance Indicators 2022</em>. Melbourne: State of Victoria, May 2025. ISSN 2207-3558.</div></li>
+        <li class="ref-item"><div class="ref-num">6</div><div>Australian Institute of Health and Welfare. <em>National Perinatal Data Collection Annual Update 2023</em> (data visualisation). AIHW, Canberra. AIHW PER 101.</div></li>
+        <li class="ref-item"><div class="ref-num">7</div><div>Kempe P, Vikström-Bolin M. The continuous audit of events and outcomes of labour and birth using the Ten Group Classification System. <em>Eur J Obstet Gynecol Reprod Biol</em> 2019;237:181–188.</div></li>
+        <li class="ref-item"><div class="ref-num">8</div><div>Wilson D, Dornan J, Milsom I, Freeman R. UR-CHOICE: can we provide mothers-to-be with information about the risk of future pelvic floor dysfunction? <em>Int Urogynecol J</em> 2014;25(11):1449–1452.</div></li>
+        <li class="ref-item"><div class="ref-num">9</div><div>Jelovsek JE, Chagin K, Gyhagen M, et al. Predicting risk of pelvic floor disorders 12 and 20 years after delivery. <em>Am J Obstet Gynecol</em> 2018;218(2):222.e1–222.e19.</div></li>
+        <li class="ref-item"><div class="ref-num">10</div><div>Blomquist JL, Muñoz A, Carroll M, Handa VL. Association of delivery mode with pelvic floor disorders after childbirth. <em>JAMA</em> 2018;320(23):2438–2447.</div></li>
+        <li class="ref-item"><div class="ref-num">11</div><div>Handa VL, Blomquist JL, Carroll M, Roem J, Muñoz A. Pelvic organ prolapse as a function of levator ani avulsion, hiatus size, and strength. <em>Am J Obstet Gynecol</em> 2019;221(1):41.e1–41.e7.</div></li>
+        <li class="ref-item"><div class="ref-num">12</div><div>Wong KW, Okeahialam N, Thakar R, Sultan AH. Obstetric risk factors for levator ani muscle avulsion: a systematic review and meta-analysis. <em>Eur J Obstet Gynecol Reprod Biol</em> 2024;296:99–106.</div></li>
+        <li class="ref-item"><div class="ref-num">13</div><div>Memon HU, Blomquist JL, Dietz HP, Pierce CB, Weinstein MM, Handa VL. Comparison of levator ani muscle avulsion injury after forceps-assisted and vacuum-assisted vaginal childbirth. <em>Obstet Gynecol</em> 2015;125(5):1080–1087.</div></li>
+        <li class="ref-item"><div class="ref-num">14</div><div>Australian Safety and Quality Health Service. <em>Third and Fourth Degree Perineal Tears Clinical Care Standard</em>. ACSQHC, 2021.</div></li>
+        <li class="ref-item"><div class="ref-num">15</div><div>Valsky DV, Lipschuetz M, Bord A, et al. Fetal head circumference and length of second stage of labor are risk factors for levator ani muscle injury. <em>Am J Obstet Gynecol</em> 2009;201:91.e1–91.e7.</div></li>
+        <li class="ref-item"><div class="ref-num">16</div><div>Burkett LS, Canavan TP, Glass Clark SM, et al. Reducing pelvic floor injury by induction of labor. <em>Int Urogynecol J</em> 2022;33(12):3353–3364.</div></li>
+        <li class="ref-item"><div class="ref-num">17</div><div>Woodley SJ, et al. Pelvic floor muscle training for preventing and treating urinary and faecal incontinence in antenatal and postnatal women. <em>Cochrane Database Syst Rev</em> 2020;5:CD007471.</div></li>
+      </ul>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-col-title">Dashboard</div>
+        <ul class="footer-links">
+          <li><a href="#tab-overview">Overview &amp; key statistics</a></li>
+          <li><a href="#tab-acute">Acute trauma rates</a></li>
+          <li><a href="#tab-longterm">Long-term dysfunction</a></li>
+          <li><a href="#tab-robson">Robson classification</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Tools &amp; Data</div>
+        <ul class="footer-links">
+          <li><a href="https://riskcalc.org/UR_CHOICE/" target="_blank" rel="noopener">UR-CHOICE calculator</a></li>
+          <li><a href="https://www.aihw.gov.au/reports-data/population-groups/mothers-babies/overview" target="_blank" rel="noopener">AIHW National Perinatal Data</a></li>
+          <li><a href="https://www.safercare.vic.gov.au" target="_blank" rel="noopener">Victorian PSPI (Safer Care Victoria)</a></li>
+          <li><a href="https://www.rcog.org.uk/about-us/quality-improvement-clinical-audit-and-research-projects/the-oasi-care-bundle/" target="_blank" rel="noopener">RCOG OASI Care Bundle</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">About</div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/ideasth" target="_blank" rel="noopener">GitHub: ideasth</a></li>
+          <li><a href="#tab-references">References</a></li>
+        </ul>
+        <p style="font-size:var(--text-xs);color:var(--color-text-faint);margin-top:var(--sp4);max-width:100%">
+          Developed by AUPFHS for shared patient decision-making. Population data only — not for individual clinical management. Always discuss with a qualified clinician.
+        </p>
+      </div>
+    </div>
+    <div class="footer-copy">
+      &copy; 2026 AUPFHS · Pelvic Floor Risk Dashboard · main.thinhalo.com · For clinical decision-support use only
+    </div>
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script>
+// ── DARK MODE TOGGLE ───────────────────────────────────────────
+(function(){
+  const t=document.querySelector('[data-theme-toggle]'),r=document.documentElement;
+  let d=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+  r.setAttribute('data-theme',d);
+  if(t)t.addEventListener('click',()=>{
+    d=d==='dark'?'light':'dark';r.setAttribute('data-theme',d);
+    t.innerHTML=d==='dark'
+      ?'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+      :'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  });
+})();
+
+// ── TABS ────────────────────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const id=btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+id).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+// ── CHART COLOURS ────────────────────────────────────────────────
+const C={
+  primary:'#006c6e',accent:'#8b3a2a',warn:'#b86b00',
+  success:'#3d7a2e',info:'#2a5c8b',violet:'#5c3b8b',
+  primaryA:'rgba(0,108,110,0.18)',accentA:'rgba(139,58,42,0.18)',
+  warnA:'rgba(184,107,0,0.18)',successA:'rgba(61,122,46,0.18)',
+  infoA:'rgba(42,92,139,0.18)',violetA:'rgba(92,59,139,0.18)',
+};
+Chart.defaults.font.family="'DM Sans',system-ui,sans-serif";
+Chart.defaults.font.size=11;
+Chart.defaults.color='#6b6860';
+
+// Method of birth
+new Chart(document.getElementById('chartMOB'),{type:'doughnut',data:{
+  labels:['Spontaneous Vaginal','Vacuum','Forceps','Caesarean Section'],
+  datasets:[{data:[48.4,6.6,4.3,40.6],
+    backgroundColor:[C.success,C.info,C.warn,C.accent],
+    borderWidth:2,borderColor:'var(--color-surface)'}]
+},options:{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{position:'bottom',labels:{padding:12,boxWidth:12}},
+    tooltip:{callbacks:{label:c=>' '+c.label+': '+c.raw+'%'}}}
+}});
+
+// Age vs CS rate
+new Chart(document.getElementById('chartAgeCS'),{type:'bar',data:{
+  labels:['<20','20–24','25–29','30–34','35–39','40+'],
+  datasets:[{label:'CS rate (%)',data:[23.2,28.5,34.9,40.9,48.2,59.2],
+    backgroundColor:C.primary,borderRadius:6}]
+},options:{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false}},
+  scales:{y:{beginAtZero:true,ticks:{callback:v=>v+'%'},grid:{color:'rgba(0,0,0,0.06)'}},
+    x:{grid:{display:false}}}
+}});
+
+// OASI by mode
+new Chart(document.getElementById('chartOASI'),{type:'bar',data:{
+  labels:['Elective CS','1st stage em. CS','SVB Multipara','SVB Primipara','Vacuum','Low Forceps','Rot. Forceps'],
+  datasets:[{label:'OASI rate (%)',data:[0,0.5,0.9,3.5,5.5,7.5,12],
+    backgroundColor:[C.success,C.success,C.info,C.warn,C.warn,C.accent,C.accent],borderRadius:6}]
+},options:{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false}},
+  scales:{y:{beginAtZero:true,ticks:{callback:v=>v+'%'},grid:{color:'rgba(0,0,0,0.06)'}},
+    x:{grid:{display:false},ticks:{maxRotation:45}}}
+}});
+
+// PSPI trend
+new Chart(document.getElementById('chartPSPITrend'),{type:'line',data:{
+  labels:['2018','2019','2020','2021','2022'],
+  datasets:[
+    {label:'Unassisted (1ci)',data:[3.8,4.2,3.7,4.0,3.5],borderColor:C.warn,backgroundColor:C.warnA,tension:.4,fill:true,pointRadius:4},
+    {label:'Assisted (1cii)',data:[5.0,5.6,5.4,5.0,4.5],borderColor:C.accent,backgroundColor:C.accentA,tension:.4,fill:true,pointRadius:4},
+  ]
+},options:{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{position:'bottom'}},
+  scales:{y:{beginAtZero:true,ticks:{callback:v=>v+'%'},grid:{color:'rgba(0,0,0,0.06)'}},
+    x:{grid:{display:false}}}
+}});
+
+// Long-term PFD 12 vs 26 yrs
+new Chart(document.getElementById('chartLongTerm'),{type:'bar',data:{
+  labels:['Urinary Inc.','Anal Inc.','Prolapse (SCD)'],
+  datasets:[
+    {label:'12 years',data:[52.7,12.9,17],backgroundColor:C.info,borderRadius:6},
+    {label:'26 years',data:[60.7,21.6,17.2],backgroundColor:C.violet,borderRadius:6},
+  ]
+},options:{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{position:'bottom'}},
+  scales:{y:{beginAtZero:true,max:80,ticks:{callback:v=>v+'%'},grid:{color:'rgba(0,0,0,0.06)'}},
+    x:{grid:{display:false}}}
+}});
+
+// UI by mode of birth (26yr data)
+new Chart(document.getElementById('chartUIMOB'),{type:'bar',data:{
+  labels:['Excl. CS','SVB only','Any Vacuum','Any Forceps'],
+  datasets:[
+    {label:'Urinary Incont.',data:[42,62,65,68],backgroundColor:C.violet,borderRadius:6},
+    {label:'Anal Incont.',data:[12,20,22,32],backgroundColor:C.accent,borderRadius:6},
+  ]
+},options:{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{position:'bottom'}},
+  scales:{y:{beginAtZero:true,max:80,ticks:{callback:v=>v+'%'},grid:{color:'rgba(0,0,0,0.06)'}},
+    x:{grid:{display:false}}}
+}});
+
+// ── RISK CALCULATOR ──────────────────────────────────────────────
+function calculateRisk(){
+  const age=parseInt(document.getElementById('inp-age').value)||30;
+  const height=parseInt(document.getElementById('inp-height').value)||165;
+  const weight=parseInt(document.getElementById('inp-weight').value)||70;
+  const bmi=weight/((height/100)**2);
+  const efw=parseInt(document.getElementById('inp-efw').value)||3300;
+  const gestation=parseInt(document.getElementById('inp-gestation').value)||39;
+  const parity=document.getElementById('inp-parity').value;
+  const mob=document.getElementById('inp-mob').value;
+  const op=document.getElementById('inp-op').value;
+  const bundle=document.getElementById('inp-bundle').value;
+  const oasiHx=document.getElementById('inp-oasi-hx').value;
+  const uiPreg=document.getElementById('inp-ui-preg').value;
+
+  // Base rates (primipara, SVB, ~39 weeks)
+  let levBase=14, oasiBase=3.5, ui12=22, ai12=8, pop12=7;
+
+  // Parity modifier
+  const parMod={nullip:1.0,multip:0.45,vbac:0.55,'multip2plus':0.3};
+  levBase*=parMod[parity]||1;
+  oasiBase*=parMod[parity]||1;
+  const uiMod={nullip:1.0,multip:0.8,vbac:0.85,'multip2plus':0.7};
+  ui12*=uiMod[parity]||1; ai12*=uiMod[parity]||1; pop12*=uiMod[parity]||1;
+
+  // Mode of birth modifier
+  const mobMod={svb:1.0,vacuum:1.6,'forceps-low':3.0,'forceps-rot':4.5,'cs2nd':0.25,'cs1st':0.08,'elective-cs':0.04};
+  const oasiMobMod={svb:1.0,vacuum:1.6,'forceps-low':2.2,'forceps-rot':4.0,'cs2nd':0.12,'cs1st':0.04,'elective-cs':0};
+  const ltMobMod={svb:1.0,vacuum:1.1,'forceps-low':1.25,'forceps-rot':1.4,'cs2nd':0.7,'cs1st':0.6,'elective-cs':0.55};
+  levBase*=mobMod[mob]||1;
+  const oasiAdj=oasiBase*(oasiMobMod[mob]||1);
+  ui12*=ltMobMod[mob]||1; ai12*=ltMobMod[mob]||1; pop12*=ltMobMod[mob]||1;
+
+  // Age modifier
+  if(age>35){levBase*=1.3;ui12*=1.15;ai12*=1.1;}
+  if(age>40){levBase*=1.6;ui12*=1.25;ai12*=1.2;}
+
+  // BMI modifier
+  if(bmi>30){levBase*=1.1;ui12*=1.15;pop12*=1.25;}
+  if(bmi>35){levBase*=1.2;ui12*=1.25;pop12*=1.5;}
+
+  // EFW modifier — head circumference proxy
+  const gestAdj=gestation-39;
+  const efwAdjusted=efw+(gestAdj*150);
+  if(efwAdjusted>4000){levBase*=1.8;oasiBase*=1.4;}
+  else if(efwAdjusted<3200){levBase*=0.8;oasiBase*=0.85;}
+
+  // Gestation
+  if(gestation<=38){levBase*=0.85;}
+  if(gestation>=41){levBase*=1.25;}
+
+  // OP modifier
+  if(op==='yes'){levBase*=1.7;oasiBase*=1.3;}
+
+  // Bundle modifier
+  if(bundle==='yes'&&(mob==='svb'||mob==='vacuum')){oasiBase*=0.7;}
+
+  // Previous OASI
+  if(oasiHx==='symptomatic'){ai12+=20;ui12+=10;}
+
+  // UI in pregnancy
+  if(uiPreg==='yes'){ui12+=15;}
+
+  // Clamp
+  levBase=Math.min(levBase,80);
+  const oasiAdj2=Math.min(oasiAdj,25);
+  ui12=Math.min(ui12,75); ai12=Math.min(ai12,50); pop12=Math.min(pop12,40);
+
+  const ui20=Math.min(ui12*1.2,85); const ai20=Math.min(ai12*1.25,55);
+  const pop20=Math.min(pop12*1.15,45); const surg=Math.min(pop20*0.5,25);
+
+  // Overall risk level
+  const overallScore=(levBase*0.4+oasiAdj2*2+ui12*0.3+pop12*0.5)/10;
+  let riskLevel, riskClass, riskColor;
+  if(overallScore<2){riskLevel='LOW';riskClass='rt-low';riskColor=C.success;}
+  else if(overallScore<4){riskLevel='MODERATE';riskClass='rt-mod';riskColor=C.warn;}
+  else if(overallScore<7){riskLevel='HIGH';riskClass='rt-high';riskColor=C.accent;}
+  else{riskLevel='VERY HIGH';riskClass='rt-vhigh';riskColor='#b02020';}
+
+  // Render
+  document.getElementById('result-panel').classList.remove('hidden');
+  document.getElementById('calc-placeholder').style.display='none';
+  const badge=document.getElementById('result-risk-badge');
+  badge.textContent=riskLevel; badge.className='risk-tag '+riskClass;
+  document.getElementById('result-patient-summary').textContent=
+    `Age ${age}, BMI ${bmi.toFixed(1)}, EFW ${efwAdjusted}g, Gestation ${gestation}wk`;
+
+  const results=[
+    {label:'Levator ani injury',val:levBase.toFixed(1)+'%',sub:'Acute (permanent)',color:riskColor,bg:levBase>25?C.accentA:C.warnA},
+    {label:'OASI (3°/4° tear)',val:oasiAdj2.toFixed(1)+'%',sub:'Acute birth trauma',color:riskColor,bg:C.warnA},
+    {label:'Urinary incontinence',val:ui12.toFixed(0)+'–'+ui20.toFixed(0)+'%',sub:'12–20 yr estimate',color:C.violet,bg:C.violetA},
+    {label:'Anal incontinence',val:ai12.toFixed(0)+'–'+ai20.toFixed(0)+'%',sub:'12–20 yr estimate',color:C.accent,bg:C.accentA},
+    {label:'Pelvic organ prolapse',val:pop12.toFixed(0)+'–'+pop20.toFixed(0)+'%',sub:'12–20 yr estimate',color:C.info,bg:C.infoA},
+    {label:'Lifetime surgery risk',val:'~'+surg.toFixed(0)+'%',sub:'Pelvic reconstructive',color:C.primary,bg:C.primaryA},
+  ];
+  const g=document.getElementById('result-grid');
+  g.innerHTML=results.map(r=>`
+    <div class="result-item" style="background:${r.bg};border-color:color-mix(in oklab,${r.color} 30%,transparent)">
+      <div class="result-pct" style="color:${r.color}">${r.val}</div>
+      <div class="result-desc">${r.label}</div>
+      <div class="result-range">${r.sub}</div>
+    </div>`).join('');
+
+  // Notes
+  const notes=[];
+  if(mob==='forceps-rot'||mob==='forceps-low') notes.push('⚠ Forceps significantly increases levator ani avulsion risk. Vacuum is preferred when OVD is indicated.');
+  if(op==='yes') notes.push('⚠ Persistent occiput posterior: manual rotation reduces levator injury risk (OR 3.9 if not rotated).');
+  if(efwAdjusted>4000) notes.push('⚠ Estimated macrosomia (EFW >4000g): induction at 38–39 weeks may reduce injury risk.');
+  if(age>35) notes.push('⚠ Advanced maternal age (>35): increased tissue stiffness and levator injury risk.');
+  if(bmi>30) notes.push('ℹ High BMI: POP risk OR 1.75. Weight management post-partum is recommended.');
+  if(bundle==='no') notes.push('✓ Consider implementing the OASI care bundle to reduce 3°/4° tear rates by ~10–20%.');
+  if(oasiHx==='symptomatic') notes.push('🔴 Previous OASI with symptoms/defect: discuss elective CS with patient. Anorectal manometry + endoanal ultrasound recommended.');
+  if(uiPreg==='yes') notes.push('ℹ Pre-existing UI increases long-term dysfunction risk. Refer to pelvic floor physiotherapy antenatally.');
+  if(mob==='elective-cs') notes.push('✓ Elective CS provides the lowest risk of acute pelvic floor trauma but carries other surgical risks (future pregnancy, placenta accreta, longer recovery).');
+  if(parity==='nullip'&&mob==='svb') notes.push('ℹ Primiparous SVB: antenatal perineal massage from 34 weeks (RR 0.49 for severe tear) and warm compresses in labour are recommended.');
+  if(notes.length===0) notes.push('✓ No major additional risk modifiers identified for this combination. Standard care and counselling recommended.');
+
+  document.getElementById('result-notes').innerHTML=notes.map(n=>`
+    <li style="font-size:var(--text-xs);padding:var(--sp2) var(--sp3);background:var(--color-surface);
+      border-radius:var(--radius-sm);border:1px solid var(--color-border)">${n}</li>`).join('');
+}
+
+function resetCalc(){
+  document.getElementById('result-panel').classList.add('hidden');
+  document.getElementById('calc-placeholder').style.display='block';
+}
+
+// Animate bars on first view
+const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('.bar-fill').forEach(b=>{b.style.width=b.style.width;});io.unobserve(e.target);}});});
+document.querySelectorAll('.bar-wrap').forEach(b=>io.observe(b.closest('.card')||b));
+</script>
+</body>
+</html>
