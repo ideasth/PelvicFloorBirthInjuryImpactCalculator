@@ -280,6 +280,22 @@ cite{font-style:italic}
   .page-hero,.dash-hero{padding-left:var(--sp4);padding-right:var(--sp4)}
 }
 
+/* ── Risk Calculator ── */
+.calc-field{margin-bottom:var(--sp5)}
+.calc-label{display:block;font-size:var(--tx-sm);font-weight:600;color:var(--text);margin-bottom:var(--sp2)}
+.calc-slider-row{display:flex;align-items:center;gap:var(--sp3)}
+.calc-slider-row input[type=range]{flex:1;accent-color:var(--primary);height:6px;cursor:pointer}
+.calc-val{font-size:var(--tx-sm);font-weight:700;color:var(--primary);min-width:80px;text-align:right;font-variant-numeric:tabular-nums}
+.calc-hint{font-size:var(--tx-xs);color:var(--text-muted);margin-top:4px;line-height:1.5}
+.calc-radio{display:flex;align-items:flex-start;gap:var(--sp2);font-size:var(--tx-sm);cursor:pointer;color:var(--text)}
+.calc-radio input{margin-top:3px;accent-color:var(--primary);flex-shrink:0}
+.risk-meter-bar{height:18px;border-radius:var(--radius-full);transition:width .6s cubic-bezier(.16,1,.3,1),background .4s;min-width:4px}
+.risk-pill{display:inline-block;padding:2px 10px;border-radius:var(--radius-full);font-size:var(--tx-xs);font-weight:700}
+@media(max-width:900px){
+  .calc-layout{grid-template-columns:1fr!important}
+  .calc-layout>div:first-child{position:static!important}
+}
+
 /* IOL Macrosomia Tab Responsive */
 @media(max-width:768px){
   .iol-grid{grid-template-columns:1fr !important}
@@ -981,16 +997,197 @@ cite{font-style:italic}
      PAGE 3 — RISK CALCULATOR PLACEHOLDER
 ══════════════════════════════════ -->
 <div id="page-calculator" class="page">
-  <div class="container" style="padding:var(--sp16) 0;text-align:center">
-    <div style="font-size:3rem;margin-bottom:var(--sp4)">&#128200;</div>
-    <h2 style="font-size:var(--tx-lg);font-weight:700;margin-bottom:var(--sp3)">Risk Calculator</h2>
-    <p style="color:var(--text-muted);max-width:50ch;margin:0 auto var(--sp6)">Individual patient risk prediction using UR-CHOICE and other validated tools — incorporating maternal age, BMI, parity, EFW, prior OASI history, and intrapartum factors.</p>
-    <div class="callout" style="max-width:600px;margin:0 auto;text-align:left">
-      <h4>Coming soon</h4>
-      <p>The risk calculator will integrate UR-CHOICE (riskcalc.org/UR_CHOICE) with local Australian population data and real-time input for all prelabour and intrapartum risk factors. It will output individualised OASI, levator avulsion, and long-term PFD probability estimates by mode of birth.</p>
+<div style="max-width:var(--content-wide);margin:0 auto;padding:var(--sp6) var(--sp4)">
+
+  <!-- Header -->
+  <div style="background:linear-gradient(135deg,var(--surface) 0%,var(--primary-hl) 100%);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--sp8);margin-bottom:var(--sp6)">
+    <div style="display:flex;align-items:center;gap:var(--sp4);margin-bottom:var(--sp3)">
+      <div style="font-size:2.2rem">📊</div>
+      <div>
+        <h1 style="font-size:var(--tx-xl);font-weight:800;color:var(--text);margin-bottom:4px">Pelvic Floor Risk Calculator</h1>
+        <p style="color:var(--text-muted);font-size:var(--tx-sm)">UR-CHOICE model · OASI · Levator avulsion · Long-term PFD risk by mode of birth</p>
+      </div>
+    </div>
+    <div style="background:color-mix(in oklch,var(--warning,#964219) 8%,var(--surface));border:1px solid color-mix(in oklch,var(--warning,#964219) 25%,var(--border));border-radius:var(--radius-lg);padding:var(--sp3) var(--sp4);font-size:var(--tx-xs);color:var(--text-muted)">
+      <strong style="color:var(--text)">⚠️ Clinical decision-support only.</strong>
+      Based on UR-CHOICE (Wilson et al. Int Urogynecol J 2014), OASI risk models (Packet et al. UOG 2023), and validated population data. Not a substitute for individualised clinical assessment or guideline-based care.
     </div>
   </div>
+
+  <!-- Two-column layout: inputs left, results right -->
+  <div style="display:grid;grid-template-columns:420px 1fr;gap:var(--sp6);align-items:start" class="calc-layout">
+
+    <!-- ── LEFT: INPUT PANEL ── -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--sp6);position:sticky;top:5rem">
+      <h2 style="font-size:var(--tx-base);font-weight:700;color:var(--text);margin-bottom:var(--sp5);padding-bottom:var(--sp3);border-bottom:1px solid var(--divider)">📋 Patient Factors</h2>
+
+      <!-- SECTION: PRELABOUR -->
+      <div style="font-size:var(--tx-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--primary);font-weight:700;margin-bottom:var(--sp3)">Prelabour Factors</div>
+
+      <!-- Age -->
+      <div class="calc-field">
+        <label class="calc-label">Maternal Age</label>
+        <div class="calc-slider-row">
+          <input type="range" id="c-age" min="15" max="50" value="28" step="1" oninput="cUpdate('age-val',this.value+' yrs');calcRisk()">
+          <span id="age-val" class="calc-val">28 yrs</span>
+        </div>
+        <div class="calc-hint">Age ≥35: OR 1.3–1.5 for OASI; independent risk (Packet 2023)</div>
+      </div>
+
+      <!-- Height -->
+      <div class="calc-field">
+        <label class="calc-label">Maternal Height</label>
+        <div class="calc-slider-row">
+          <input type="range" id="c-height" min="140" max="185" value="163" step="1" oninput="cUpdate('height-val',this.value+' cm');calcRisk()">
+          <span id="height-val" class="calc-val">163 cm</span>
+        </div>
+        <div class="calc-hint">&lt;160 cm: UR-CHOICE risk flag; &lt;150 cm OR ~9.9 for emergency CS</div>
+      </div>
+
+      <!-- Weight / BMI -->
+      <div class="calc-field">
+        <label class="calc-label">Pre-pregnancy BMI</label>
+        <div class="calc-slider-row">
+          <input type="range" id="c-bmi" min="16" max="50" value="24" step="0.5" oninput="cUpdate('bmi-val',this.value+' kg/m²');calcRisk()">
+          <span id="bmi-val" class="calc-val">24 kg/m²</span>
+        </div>
+        <div class="calc-hint">Obesity (BMI≥30): ↑ macrosomia but ↓ OASI risk (perineal fat protection); ↑ CS</div>
+      </div>
+
+      <!-- Parity -->
+      <div class="calc-field">
+        <label class="calc-label">Parity / Birth History</label>
+        <div style="display:flex;flex-direction:column;gap:var(--sp2);margin-top:var(--sp2)">
+          <label class="calc-radio"><input type="radio" name="c-parity" value="P0" checked onchange="calcRisk()"><span>Nulliparous — first birth (no prior vaginal births)</span></label>
+          <label class="calc-radio"><input type="radio" name="c-parity" value="P1vag" onchange="calcRisk()"><span>Multiparous — prior uncomplicated vaginal birth(s)</span></label>
+          <label class="calc-radio"><input type="radio" name="c-parity" value="P1OASI" onchange="calcRisk()"><span>Prior vaginal birth + previous OASI (asymptomatic, normal manometry)</span></label>
+          <label class="calc-radio"><input type="radio" name="c-parity" value="P1OASIsx" onchange="calcRisk()"><span>Prior OASI + current symptoms / low pressures / residual defect</span></label>
+          <label class="calc-radio"><input type="radio" name="c-parity" value="VBAC" onchange="calcRisk()"><span>VBAC — prior caesarean, no prior vaginal birth</span></label>
+        </div>
+      </div>
+
+      <!-- EFW -->
+      <div class="calc-field">
+        <label class="calc-label">Estimated Fetal Weight (36w scan)</label>
+        <div class="calc-slider-row">
+          <input type="range" id="c-efw" min="2200" max="5500" value="3200" step="50" oninput="cUpdate('efw-val',(this.value/1000).toFixed(2)+' kg');calcRisk()">
+          <span id="efw-val" class="calc-val">3.20 kg</span>
+        </div>
+        <div class="calc-hint">≥4,000g: OR 2.0 OASI; ≥4,500g: ACOG CS threshold (diabetic); EFW accuracy ±15–20%</div>
+      </div>
+
+      <!-- GDM -->
+      <div class="calc-field">
+        <label class="calc-label">Gestational Diabetes / Diabetes</label>
+        <div style="display:flex;flex-direction:column;gap:var(--sp2);margin-top:var(--sp2)">
+          <label class="calc-radio"><input type="radio" name="c-gdm" value="none" checked onchange="calcRisk()"><span>No GDM / diabetes</span></label>
+          <label class="calc-radio"><input type="radio" name="c-gdm" value="diet" onchange="calcRisk()"><span>GDM — diet-controlled</span></label>
+          <label class="calc-radio"><input type="radio" name="c-gdm" value="med" onchange="calcRisk()"><span>GDM — medication (metformin / insulin) or Type 2 DM</span></label>
+        </div>
+      </div>
+
+      <!-- Prior OASI detail -->
+      <div id="oasi-detail" style="display:none" class="calc-field">
+        <label class="calc-label">Prior OASI — Sphincter Status</label>
+        <div style="display:flex;flex-direction:column;gap:var(--sp2);margin-top:var(--sp2)">
+          <label class="calc-radio"><input type="radio" name="c-oasi-status" value="asym" checked onchange="calcRisk()"><span>Asymptomatic, normal manometry, no residual defect on endoanal USS</span></label>
+          <label class="calc-radio"><input type="radio" name="c-oasi-status" value="defect" onchange="calcRisk()"><span>Residual defect on USS, normal pressures, asymptomatic</span></label>
+          <label class="calc-radio"><input type="radio" name="c-oasi-status" value="sx" onchange="calcRisk()"><span>Symptomatic (AI ≥ 1×/week) ± low squeeze pressure</span></label>
+        </div>
+      </div>
+
+      <!-- Ethnicity -->
+      <div class="calc-field">
+        <label class="calc-label">Ethnicity (perineal body anatomy)</label>
+        <div style="display:flex;flex-direction:column;gap:var(--sp2);margin-top:var(--sp2)">
+          <label class="calc-radio"><input type="radio" name="c-eth" value="white" checked onchange="calcRisk()"><span>White / Caucasian / European</span></label>
+          <label class="calc-radio"><input type="radio" name="c-eth" value="asian" onchange="calcRisk()"><span>East / Southeast Asian</span></label>
+          <label class="calc-radio"><input type="radio" name="c-eth" value="indian" onchange="calcRisk()"><span>South Asian (Indian subcontinent)</span></label>
+          <label class="calc-radio"><input type="radio" name="c-eth" value="african" onchange="calcRisk()"><span>African / Afro-Caribbean</span></label>
+          <label class="calc-radio"><input type="radio" name="c-eth" value="other" onchange="calcRisk()"><span>Other / not specified</span></label>
+        </div>
+      </div>
+
+      <!-- SECTION: INTRAPARTUM -->
+      <div style="font-size:var(--tx-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--primary);font-weight:700;margin:var(--sp5) 0 var(--sp3)">Intrapartum Factors</div>
+
+      <!-- Mode of birth -->
+      <div class="calc-field">
+        <label class="calc-label">Mode of Birth (or anticipated mode)</label>
+        <div style="display:flex;flex-direction:column;gap:var(--sp2);margin-top:var(--sp2)">
+          <label class="calc-radio"><input type="radio" name="c-mob" value="SVB" checked onchange="calcRisk()"><span>Spontaneous vaginal birth</span></label>
+          <label class="calc-radio"><input type="radio" name="c-mob" value="NR-vacuum" onchange="calcRisk()"><span>Non-rotational low vacuum (outlet / low cavity)</span></label>
+          <label class="calc-radio"><input type="radio" name="c-mob" value="NR-forceps" onchange="calcRisk()"><span>Non-rotational forceps (outlet / low cavity)</span></label>
+          <label class="calc-radio"><input type="radio" name="c-mob" value="ROT-vacuum" onchange="calcRisk()"><span>Rotational / mid-cavity vacuum</span></label>
+          <label class="calc-radio"><input type="radio" name="c-mob" value="ROT-forceps" onchange="calcRisk()"><span>Rotational / mid-cavity forceps (Kielland's)</span></label>
+          <label class="calc-radio"><input type="radio" name="c-mob" value="CS1" onchange="calcRisk()"><span>Emergency CS — 1st stage (before full dilatation)</span></label>
+          <label class="calc-radio"><input type="radio" name="c-mob" value="CS2" onchange="calcRisk()"><span>Emergency CS — 2nd stage (at or after full dilatation)</span></label>
+          <label class="calc-radio"><input type="radio" name="c-mob" value="CSE" onchange="calcRisk()"><span>Elective / planned caesarean section (pre-labour)</span></label>
+        </div>
+      </div>
+
+      <!-- Labour onset -->
+      <div class="calc-field">
+        <label class="calc-label">Labour Onset</label>
+        <div style="display:flex;flex-direction:column;gap:var(--sp2);margin-top:var(--sp2)">
+          <label class="calc-radio"><input type="radio" name="c-labour" value="spont" checked onchange="calcRisk()"><span>Spontaneous onset of labour</span></label>
+          <label class="calc-radio"><input type="radio" name="c-labour" value="iols" onchange="calcRisk()"><span>Induction of labour</span></label>
+          <label class="calc-radio"><input type="radio" name="c-labour" value="aug" onchange="calcRisk()"><span>Augmented labour (oxytocin)</span></label>
+        </div>
+      </div>
+
+      <!-- Epidural -->
+      <div class="calc-field">
+        <label class="calc-label">Epidural / Regional Analgesia</label>
+        <div style="display:flex;gap:var(--sp4);margin-top:var(--sp2)">
+          <label class="calc-radio"><input type="radio" name="c-epi" value="no" checked onchange="calcRisk()"><span>No epidural</span></label>
+          <label class="calc-radio"><input type="radio" name="c-epi" value="yes" onchange="calcRisk()"><span>Epidural used</span></label>
+        </div>
+        <div class="calc-hint">Epidural → ↑ instrumental birth risk → ↑ OASI; but may allow passive descent protecting perineum</div>
+      </div>
+
+      <!-- Fetal position at FD -->
+      <div class="calc-field">
+        <label class="calc-label">Fetal Position at Full Dilatation</label>
+        <div style="display:flex;flex-direction:column;gap:var(--sp2);margin-top:var(--sp2)">
+          <label class="calc-radio"><input type="radio" name="c-op" value="oa" checked onchange="calcRisk()"><span>Occiput anterior (OA) — normal</span></label>
+          <label class="calc-radio"><input type="radio" name="c-op" value="op" onchange="calcRisk()"><span>Persistent occiput posterior (OP) at full dilatation</span></label>
+          <label class="calc-radio"><input type="radio" name="c-op" value="unknown" onchange="calcRisk()"><span>Unknown / not yet in labour</span></label>
+        </div>
+        <div class="calc-hint">Persistent OP: OR 2.0 for OASI; larger presenting diameter; ↑ rotational birth risk</div>
+      </div>
+
+      <!-- Active pushing duration -->
+      <div class="calc-field">
+        <label class="calc-label">Active Pushing Duration (2nd stage)</label>
+        <div style="display:flex;flex-direction:column;gap:var(--sp2);margin-top:var(--sp2)">
+          <label class="calc-radio"><input type="radio" name="c-push" value="normal" checked onchange="calcRisk()"><span>Normal (&lt;60 min active pushing)</span></label>
+          <label class="calc-radio"><input type="radio" name="c-push" value="prolonged" onchange="calcRisk()"><span>Prolonged (≥60 min active pushing)</span></label>
+        </div>
+        <div class="calc-hint">Prolonged active pushing: OR ~4× for OASI (Daly 2023)</div>
+      </div>
+
+      <!-- Prevention bundle -->
+      <div class="calc-field">
+        <label class="calc-label">Prevention Bundle Applied</label>
+        <div style="display:flex;flex-direction:column;gap:var(--sp2);margin-top:var(--sp2)">
+          <label class="calc-radio"><input type="radio" name="c-bundle" value="full" checked onchange="calcRisk()"><span>Full bundle (warm pack + perineal support + lateral/McRoberts + controlled birth)</span></label>
+          <label class="calc-radio"><input type="radio" name="c-bundle" value="partial" onchange="calcRisk()"><span>Partial bundle (some elements)</span></label>
+          <label class="calc-radio"><input type="radio" name="c-bundle" value="none" onchange="calcRisk()"><span>No bundle / not applicable (CS)</span></label>
+        </div>
+        <div class="calc-hint">Full WHA/SaferCare bundle reduces OASI by 30–54% (Laine 2012; Egenberg 2016)</div>
+      </div>
+
+    </div><!-- /left panel -->
+
+    <!-- ── RIGHT: RESULTS PANEL ── -->
+    <div id="calc-results" style="display:flex;flex-direction:column;gap:var(--sp5)">
+      <!-- Populated by JS -->
+    </div>
+
+  </div><!-- /grid -->
 </div>
+</div><!-- /page-calculator -->
 
 <footer class="page-footer">
   <p><strong>Pelvic Floor Risk Dashboard</strong></p>
@@ -1939,6 +2136,319 @@ if(sbEl&&window.IntersectionObserver){
 </div><!-- /page-iol -->
 
 
+<script>
+
+// ── Risk Calculator ──
+function cUpdate(id, val){ var el=document.getElementById(id); if(el) el.textContent=val; }
+
+function getRiskColor(pct){
+  if(pct < 5) return 'var(--success,#437a22)';
+  if(pct < 15) return '#d19900';
+  if(pct < 30) return '#da7101';
+  return 'var(--notification,#a13544)';
+}
+function getRiskLabel(pct){
+  if(pct < 5) return {txt:'Low',bg:'color-mix(in oklch,var(--success,#437a22) 12%,var(--surface))',border:'color-mix(in oklch,var(--success,#437a22) 30%,var(--border))',col:'var(--success,#437a22)'};
+  if(pct < 15) return {txt:'Moderate',bg:'color-mix(in oklch,#d19900 12%,var(--surface))',border:'color-mix(in oklch,#d19900 30%,var(--border))',col:'#d19900'};
+  if(pct < 30) return {txt:'High',bg:'color-mix(in oklch,#da7101 12%,var(--surface))',border:'color-mix(in oklch,#da7101 30%,var(--border))',col:'#da7101'};
+  return {txt:'Very High',bg:'color-mix(in oklch,var(--notification,#a13544) 12%,var(--surface))',border:'color-mix(in oklch,var(--notification,#a13544) 30%,var(--border))',col:'var(--notification,#a13544)'};
+}
+
+function calcRisk(){
+  // ── Gather inputs ──
+  var age    = parseInt(document.getElementById('c-age').value)||28;
+  var height = parseInt(document.getElementById('c-height').value)||163;
+  var bmi    = parseFloat(document.getElementById('c-bmi').value)||24;
+  var efw    = parseInt(document.getElementById('c-efw').value)||3200;
+  var parity = document.querySelector('input[name="c-parity"]:checked')?.value||'P0';
+  var gdm    = document.querySelector('input[name="c-gdm"]:checked')?.value||'none';
+  var mob    = document.querySelector('input[name="c-mob"]:checked')?.value||'SVB';
+  var labour = document.querySelector('input[name="c-labour"]:checked')?.value||'spont';
+  var epi    = document.querySelector('input[name="c-epi"]:checked')?.value||'no';
+  var op     = document.querySelector('input[name="c-op"]:checked')?.value||'oa';
+  var push   = document.querySelector('input[name="c-push"]:checked')?.value||'normal';
+  var bundle = document.querySelector('input[name="c-bundle"]:checked')?.value||'full';
+  var eth    = document.querySelector('input[name="c-eth"]:checked')?.value||'white';
+  var oasiStatus = document.querySelector('input[name="c-oasi-status"]:checked')?.value||'asym';
+
+  // Show/hide prior OASI detail
+  var oasiDiv = document.getElementById('oasi-detail');
+  if(oasiDiv) oasiDiv.style.display = (parity==='P1OASI'||parity==='P1OASIsx') ? 'block' : 'none';
+
+  // ── CS check — some outcomes not applicable ──
+  var isCS = (mob==='CS1'||mob==='CS2'||mob==='CSE');
+  var isForceps = (mob==='NR-forceps'||mob==='ROT-forceps');
+  var isVacuum = (mob==='NR-vacuum'||mob==='ROT-vacuum');
+  var isRotational = (mob==='ROT-vacuum'||mob==='ROT-forceps');
+
+  // ────────────────────────────────────────────
+  // 1. OASI RISK (UR-CHOICE + Packet 2023)
+  // ────────────────────────────────────────────
+  // Base rate by parity/mode
+  var oasiBase;
+  if(isCS){ oasiBase = 0.0; }
+  else if(parity==='P0'||parity==='VBAC'){
+    if(mob==='SVB')           oasiBase = 3.0;
+    else if(mob==='NR-vacuum') oasiBase = 5.5;
+    else if(mob==='NR-forceps') oasiBase = 9.5;
+    else if(mob==='ROT-vacuum') oasiBase = 8.0;
+    else if(mob==='ROT-forceps') oasiBase = 12.5;
+    else oasiBase = 3.0;
+  } else {
+    // Multiparous (prior vaginal)
+    if(mob==='SVB')            oasiBase = 0.8;
+    else if(mob==='NR-vacuum') oasiBase = 2.0;
+    else if(mob==='NR-forceps') oasiBase = 3.5;
+    else if(mob==='ROT-vacuum') oasiBase = 3.5;
+    else if(mob==='ROT-forceps') oasiBase = 5.5;
+    else oasiBase = 0.8;
+  }
+
+  var oasiMult = 1.0;
+  // EFW ≥4,000g: OR ~2.0
+  if(efw >= 5000) oasiMult *= 2.8;
+  else if(efw >= 4500) oasiMult *= 2.2;
+  else if(efw >= 4000) oasiMult *= 1.8;
+  // Age ≥35: OR ~1.3
+  if(age >= 40) oasiMult *= 1.5;
+  else if(age >= 35) oasiMult *= 1.3;
+  // Persistent OP: OR 2.0
+  if(op==='op') oasiMult *= 2.0;
+  // Prolonged pushing: OR ~4 (use 2.5 for cumulative model)
+  if(push==='prolonged') oasiMult *= 2.5;
+  // Ethnicity
+  if(eth==='indian') oasiMult *= 3.3;
+  else if(eth==='asian') oasiMult *= 2.0;
+  else if(eth==='african') oasiMult *= 0.5;
+  // BMI - protective at high BMI for OASI
+  if(bmi >= 35) oasiMult *= 0.7;
+  else if(bmi >= 30) oasiMult *= 0.85;
+  // Height - shorter perineal body
+  if(height < 155) oasiMult *= 1.4;
+  else if(height < 160) oasiMult *= 1.2;
+  // Prior OASI
+  if(parity==='P1OASI') oasiMult *= 4.0;
+  if(parity==='P1OASIsx') oasiMult *= 5.5;
+  // Episiotomy/Bundle
+  if(!isCS){
+    if(bundle==='full') oasiMult *= 0.55;  // 45% reduction
+    else if(bundle==='partial') oasiMult *= 0.75;
+  }
+  // Rotational: additional multiplier already in base
+  var oasiPct = Math.min(oasiBase * oasiMult, 65);
+
+  // ────────────────────────────────────────────
+  // 2. LEVATOR AVULSION RISK (Dietz 2006, DeLancey 2007)
+  // ────────────────────────────────────────────
+  var levBase;
+  if(mob==='CSE') levBase = 0.5;
+  else if(mob==='CS1') levBase = 2.5;
+  else if(mob==='CS2') levBase = 8.0;
+  else if(mob==='SVB'){
+    levBase = parity==='P0'||parity==='VBAC' ? 12.0 : 5.0;
+  }
+  else if(mob==='NR-vacuum') levBase = parity==='P0'||parity==='VBAC' ? 22.0 : 12.0;
+  else if(mob==='NR-forceps') levBase = parity==='P0'||parity==='VBAC' ? 35.0 : 18.0;
+  else if(mob==='ROT-vacuum') levBase = parity==='P0'||parity==='VBAC' ? 28.0 : 15.0;
+  else if(mob==='ROT-forceps') levBase = parity==='P0'||parity==='VBAC' ? 45.0 : 25.0;
+  else levBase = 12.0;
+
+  var levMult = 1.0;
+  if(efw >= 4500) levMult *= 2.0;
+  else if(efw >= 4000) levMult *= 1.6;
+  if(op==='op') levMult *= 1.5;
+  if(height < 155) levMult *= 1.5;
+  else if(height < 160) levMult *= 1.25;
+  if(age >= 35) levMult *= 1.2;
+  if(bmi >= 30) levMult *= 1.1;
+  var levPct = Math.min(levBase * levMult, 70);
+
+  // ────────────────────────────────────────────
+  // 3. LONG-TERM PFD RISKS (UR-CHOICE derived)
+  // ────────────────────────────────────────────
+  // UR-CHOICE predicts 5-year PFD risk
+  // Base 5yr UI risk by mode
+  var uiBase, aiBase, popBase;
+  if(mob==='CSE'){ uiBase=8; aiBase=2; popBase=5; }
+  else if(mob==='CS1'){ uiBase=12; aiBase=4; popBase=8; }
+  else if(mob==='CS2'){ uiBase=18; aiBase=8; popBase=12; }
+  else if(mob==='SVB'){ uiBase=25; aiBase=8; popBase=12; }
+  else if(mob==='NR-vacuum'){ uiBase=28; aiBase=12; popBase=15; }
+  else if(mob==='NR-forceps'){ uiBase=32; aiBase=18; popBase=18; }
+  else if(mob==='ROT-vacuum'){ uiBase=30; aiBase=15; popBase=18; }
+  else if(mob==='ROT-forceps'){ uiBase=38; aiBase=25; popBase=22; }
+  else{ uiBase=25; aiBase=8; popBase=12; }
+
+  var pfdMult = 1.0;
+  if(age >= 40) pfdMult *= 1.4;
+  else if(age >= 35) pfdMult *= 1.2;
+  if(bmi >= 35) pfdMult *= 1.3;
+  else if(bmi >= 30) pfdMult *= 1.15;
+  if(efw >= 4000) pfdMult *= 1.25;
+  if(parity==='P0'||parity==='VBAC') pfdMult *= 1.2;
+  if(height < 160 && efw >= 4000) pfdMult *= 1.15; // UR-CHOICE compound flag
+  if(parity==='P1OASI'||parity==='P1OASIsx') pfdMult *= 1.5;
+
+  var uiPct  = Math.min(uiBase * pfdMult, 75);
+  var aiPct  = Math.min(aiBase * pfdMult, 60);
+  var popPct = Math.min(popBase * pfdMult, 55);
+
+  // ────────────────────────────────────────────
+  // PRIOR OASI RECURRENCE RISK
+  // ────────────────────────────────────────────
+  var oasiRecurrence = null;
+  var oasiRecMsg = '';
+  if(parity==='P1OASI'||parity==='P1OASIsx'){
+    if(oasiStatus==='asym'){
+      oasiRecurrence = isCS ? 1.0 : (mob==='SVB' ? 4.5 : mob.includes('forceps') ? 15.0 : 8.0);
+      oasiRecMsg = 'Asymptomatic prior OASI, normal manometry: vaginal birth generally supported. Recurrence risk 4–8% SVB. Discuss fully.';
+    } else if(oasiStatus==='defect'){
+      oasiRecurrence = isCS ? 1.5 : (mob==='SVB' ? 8.0 : mob.includes('forceps') ? 22.0 : 14.0);
+      oasiRecMsg = 'Residual defect on USS: vaginal birth possible but risk elevated. Individualised anorectal physiology review recommended.';
+    } else {
+      oasiRecurrence = isCS ? 2.0 : (mob==='SVB' ? 18.0 : mob.includes('forceps') ? 40.0 : 25.0);
+      oasiRecMsg = '⚠️ Symptomatic prior OASI + low pressures: elective CS likely indicated. Discuss with colorectal/urogynaecology.';
+    }
+  }
+
+  // ── Alerts ──
+  var alerts = [];
+  if(parity==='P1OASIsx' && !isCS)
+    alerts.push({col:'var(--notification,#a13544)',msg:'🔴 Symptomatic prior OASI with low pressures / residual defect — elective CS is likely the recommended mode. Formal anorectal physiology + urogynaecology review recommended before birth plan is finalised.'});
+  if(mob==='ROT-forceps' && (parity==='P0'||parity==='VBAC'))
+    alerts.push({col:'#da7101',msg:'🟠 Rotational forceps in nulliparous: highest OASI (OR ~3.6 vs vacuum, Bahl 2024) and levator avulsion risk (~45%). Evidence supports replacement with rotational vacuum where possible. Operator experience critical.'});
+  if(efw >= 4500 && !isCS)
+    alerts.push({col:'#da7101',msg:'🟠 EFW ≥4,500g: ACOG/NICE CS threshold for diabetic women. Shoulder dystocia risk significantly elevated. IOL discussion recommended (see IOL & Macrosomia tab).'});
+  if(height < 155 && efw >= 4000 && !isCS)
+    alerts.push({col:'#da7101',msg:'⚠️ UR-CHOICE COMPOUND FLAG: Height <155 cm + EFW >4 kg — very high CPD, emergency CS, and levator avulsion risk. DeLancey capacity-demand ratio likely unfavourable.'});
+  else if(height < 160 && efw >= 4000 && !isCS)
+    alerts.push({col:'#d19900',msg:'🟡 UR-CHOICE COMPOUND FLAG: Height <160 cm + EFW >4 kg — elevated compound risk for long-term PFD. IOL and birth planning discussion recommended.'});
+  if(op==='op' && (isForceps||isRotational))
+    alerts.push({col:'#da7101',msg:'🟠 Persistent OP + instrumental birth: highest OASI risk combination. Rotational delivery (vacuum or Kielland\'s) is complex — operator experience and informed consent essential.'});
+  if(mob==='SVB' && push==='prolonged' && op==='op')
+    alerts.push({col:'#d19900',msg:'🟡 Prolonged active pushing + persistent OP: OR ~8× for OASI vs baseline. Consider trial of passive descent before active pushing. Active management with repositioning.'});
+
+  // ── RENDER ──
+  var csNote = isCS ? '<div style="background:var(--primary-hl);border-radius:var(--radius-md);padding:var(--sp2) var(--sp3);font-size:var(--tx-xs);color:var(--primary);margin-bottom:var(--sp4)">ℹ️ Caesarean section: OASI risk approaches zero, but levator avulsion still occurs in 2nd-stage CS. Long-term UI/POP risk substantially lower than vaginal birth, but not zero — pregnancy itself causes ~50% of pelvic floor risk independent of mode.</div>' : '';
+
+  var alertsHTML = alerts.map(function(a){
+    return '<div style="background:color-mix(in oklch,'+a.col+' 10%,var(--surface));border-left:4px solid '+a.col+';border-radius:var(--radius-md);padding:var(--sp3) var(--sp4);font-size:var(--tx-xs);color:var(--text);margin-bottom:var(--sp3)">'+a.msg+'</div>';
+  }).join('');
+
+  function meter(pct, label, sublabel){
+    var col = getRiskColor(pct);
+    var rl = getRiskLabel(pct);
+    var barW = Math.min(pct*1.4, 100);
+    return '<div style="background:var(--surface-offset);border-radius:var(--radius-lg);padding:var(--sp4);margin-bottom:var(--sp3)">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--sp2)">'
+      +'<span style="font-size:var(--tx-sm);font-weight:600;color:var(--text)">'+label+'</span>'
+      +'<div style="display:flex;align-items:center;gap:var(--sp2)">'
+      +'<span class="risk-pill" style="background:'+rl.bg+';color:'+rl.col+';border:1px solid '+rl.border+'">'+rl.txt+'</span>'
+      +'<span style="font-size:var(--tx-lg);font-weight:800;color:'+col+';font-variant-numeric:tabular-nums">'+pct.toFixed(1)+'%</span>'
+      +'</div></div>'
+      +'<div style="background:var(--surface-dynamic,var(--divider));border-radius:var(--radius-full);height:10px;overflow:hidden">'
+      +'<div class="risk-meter-bar" style="width:'+barW+'%;background:'+col+'"></div>'
+      +'</div>'
+      +(sublabel?'<div style="font-size:var(--tx-xs);color:var(--text-muted);margin-top:var(--sp2)">'+sublabel+'</div>':'')
+      +'</div>';
+  }
+
+  var recurrenceHTML = '';
+  if(oasiRecurrence !== null){
+    var rc = getRiskColor(oasiRecurrence);
+    recurrenceHTML = '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--sp5)">'
+      +'<h3 style="font-size:var(--tx-base);font-weight:700;color:var(--text);margin-bottom:var(--sp4)">🔁 Prior OASI: Recurrence Risk This Birth</h3>'
+      +meter(oasiRecurrence,'OASI Recurrence Risk','Based on prior injury, current sphincter status, and mode of birth')
+      +'<div style="font-size:var(--tx-xs);color:var(--text-muted);margin-top:var(--sp3);padding:var(--sp3);background:var(--surface-offset);border-radius:var(--radius-md)">'+oasiRecMsg+'</div>'
+      +'</div>';
+  }
+
+  var mobLabels = {
+    'SVB':'Spontaneous vaginal birth',
+    'NR-vacuum':'Non-rotational low vacuum',
+    'NR-forceps':'Non-rotational forceps',
+    'ROT-vacuum':'Rotational / mid-cavity vacuum',
+    'ROT-forceps':'Rotational / mid-cavity forceps',
+    'CS1':'Emergency CS — 1st stage',
+    'CS2':'Emergency CS — 2nd stage',
+    'CSE':'Elective / planned CS'
+  };
+  var parityLabels = {'P0':'Nulliparous','P1vag':'Multiparous (prior VB)','P1OASI':'Prior OASI (asymptomatic)','P1OASIsx':'Prior OASI (symptomatic)','VBAC':'VBAC'};
+  var gdmLabels = {'none':'No GDM','diet':'Diet-controlled GDM','med':'Medicated GDM/T2DM'};
+
+  document.getElementById('calc-results').innerHTML =
+    // Summary card
+    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--sp5)">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:var(--sp4);flex-wrap:wrap;gap:var(--sp2)">'
+    +'<h2 style="font-size:var(--tx-base);font-weight:700;color:var(--text)">📋 Risk Summary</h2>'
+    +'<div style="font-size:var(--tx-xs);color:var(--text-muted);text-align:right">'
+    +'Mode: <strong style="color:var(--text)">'+mobLabels[mob]+'</strong> · '
+    +'Parity: <strong style="color:var(--text)">'+parityLabels[parity]+'</strong><br>'
+    +'EFW: <strong style="color:var(--text)">'+(efw/1000).toFixed(2)+'kg</strong> · '
+    +'Height: <strong style="color:var(--text)">'+height+'cm</strong> · '
+    +'Age: <strong style="color:var(--text)">'+age+'yrs</strong> · '
+    +'BMI: <strong style="color:var(--text)">'+bmi+'</strong>'
+    +'</div></div>'
+    + csNote + alertsHTML
+    +'</div>'
+
+    // Acute Trauma
+    +'<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--sp5)">'
+    +'<h3 style="font-size:var(--tx-base);font-weight:700;color:var(--text);margin-bottom:var(--sp4)">🩹 Acute Pelvic Floor Trauma</h3>'
+    + meter(oasiPct,'OASI (3rd/4th degree tear)','Based on UR-CHOICE model, Packet et al. UOG 2023, mode, parity, EFW, and prevention bundle')
+    + meter(levPct,'Levator Ani Avulsion Risk','Based on Dietz 2006, DeLancey 2007, mode, EFW, height, and OP position')
+    +'<div style="font-size:var(--tx-xs);color:var(--text-muted);margin-top:var(--sp2);padding:var(--sp3);background:var(--surface-offset);border-radius:var(--radius-md)">'
+    +'<strong>Note:</strong> OASI rates vary significantly by whether clinical examination or endoanal USS is used for diagnosis. Registry rates (1–6%) substantially underestimate true rates found on systematic USS examination (11–27% primiparous). These estimates are based on systematic examination data.'
+    +'</div></div>'
+
+    // Prior OASI recurrence
+    + recurrenceHTML
+
+    // Long-term PFD
+    +'<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--sp5)">'
+    +'<h3 style="font-size:var(--tx-base);font-weight:700;color:var(--text);margin-bottom:var(--sp4)">📅 Long-term Pelvic Floor Dysfunction (5-year)</h3>'
+    + meter(uiPct,'Urinary Incontinence (stress / urgency)','5-year risk; UR-CHOICE model. Includes both SUI and OAB components')
+    + meter(aiPct,'Anal / Faecal Incontinence','5-year risk; elevated with OASI, levator avulsion, prolonged 2nd stage, and instrumental birth')
+    + meter(popPct,'Pelvic Organ Prolapse (symptomatic)','5-year risk requiring treatment; levator avulsion OR 2.3–4.0 for prolapse (Dietz & Steensma 2006)')
+    +'<div style="font-size:var(--tx-xs);color:var(--text-muted);margin-top:var(--sp2);padding:var(--sp3);background:var(--surface-offset);border-radius:var(--radius-md)">'
+    +'⚠️ Long-term estimates are population-level projections. Individual risk depends on factors including connective tissue quality, PFMT adherence, future births, and hormonal status. Pregnancy itself is responsible for ~50% of pelvic floor risk independent of mode of birth.'
+    +'</div></div>'
+
+    // Guidance
+    +'<div style="background:var(--primary-hl);border:1px solid var(--primary);border-radius:var(--radius-xl);padding:var(--sp5)">'
+    +'<h3 style="font-size:var(--tx-base);font-weight:700;color:var(--primary);margin-bottom:var(--sp3)">💬 Shared Decision-Making Points</h3>'
+    +'<ul style="font-size:var(--tx-sm);color:var(--text);line-height:2;padding-left:var(--sp5)">'
+    +(isCS ? '<li>Caesarean section substantially reduces OASI and levator avulsion risk — but does not eliminate pelvic floor risk entirely</li><li>Elective CS carries surgical risks including bleeding, infection, longer recovery, and implications for future pregnancies (placenta praevia/accreta)</li>' : '')
+    +(isForceps ? '<li>Forceps delivery: OASI risk is 2–3× higher than vacuum (Bahl 2024 meta-analysis). Rotational vacuum may be preferred if safe alternative exists</li>' : '')
+    +(oasiPct > 10 ? '<li>OASI risk above 10%: full prevention bundle application, mediolateral episiotomy at 60° (Episcissors-60), and warm packs are strongly indicated</li>' : '')
+    +(levPct > 25 ? '<li>Levator avulsion risk above 25%: consider pelvic floor physio referral antenatally and 6-week postnatal USS assessment</li>' : '')
+    +'<li>Pelvic floor muscle training (PFMT) antenatally and postnatally reduces UI risk by ~60% (Cochrane 2023)</li>'
+    +'<li>Postnatal pelvic floor assessment at 6–12 weeks is recommended after any vaginal birth — regardless of reported symptoms</li>'
+    +'<li>All estimates are population-based. Individualised care, clinical judgement, and the woman\'s informed preferences take precedence</li>'
+    +'</ul>'
+    +'<p style="font-size:var(--tx-xs);color:var(--text-muted);margin-top:var(--sp4)">Sources: UR-CHOICE (Wilson et al. Int Urogynecol J 2014); Packet et al. UOG 2023; Dietz & Steensma BJOG 2006; DeLancey AJOG 2007; Bahl et al. BJOG 2024 (forceps vs vacuum); Laine et al. Acta Obstet 2012 (bundle); Cochrane 2023 (PFMT).</p>'
+    +'</div>';
+
+  // Animate bars
+  setTimeout(function(){
+    document.querySelectorAll('#calc-results .risk-meter-bar').forEach(function(b){
+      var w = b.style.width;
+      b.style.width = '0%';
+      setTimeout(function(){ b.style.width = w; }, 50);
+    });
+  }, 10);
+}
+
+// Init calculator on page load and when tab is clicked
+document.addEventListener('DOMContentLoaded', function(){ setTimeout(calcRisk, 300); });
+// Patch showPage to init calculator when calculator tab is opened
+var _origShowPage = window.showPage;
+window.showPage = function(id, btn){
+  _origShowPage(id, btn);
+  if(id==='calculator') setTimeout(calcRisk, 100);
+};
+
+</script>
 <script>
 
 function updateIOL(){
