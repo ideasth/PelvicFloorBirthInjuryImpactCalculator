@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pelvic Floor Risk Dashboard</title>
+<title>Birth-related Pelvic Floor Risk Information Resource for Mothers and their Support Team</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
@@ -222,7 +222,7 @@ table{border-collapse:collapse;width:100%}
 <div id="page-welcome" class="page active">
   <div class="page-hero">
     <div class="hero-badge">Shared Decision-Making Support Tool</div>
-    <h1>Pelvic Floor Risk Dashboard</h1>
+    <h1>Birth-related Pelvic Floor Risk Information Resource for Mothers and their Support Team</h1>
     <p>Evidence-based, personalised information about the risks of different modes of birth — to help you and your clinician make the best decision for you.</p>
   </div>
   <div class="container" style="padding-top:var(--sp10);padding-bottom:var(--sp16)">
@@ -467,6 +467,7 @@ table{border-collapse:collapse;width:100%}
       <button class="section-pill" onclick="scrollTo_id('edu-levator')">Levator Injury</button>
       <button class="section-pill" onclick="scrollTo_id('edu-longterm')">Long-Term PFD</button>
       <button class="section-pill" onclick="scrollTo_id('edu-prev')">Prevention</button>
+      <button class="section-pill" onclick="scrollTo_id('edu-iol')">Big Babies &amp; Timing of Birth</button>
       <button class="section-pill" onclick="scrollTo_id('edu-prior-oasi')">Prior OASI</button>
     </div>
 
@@ -623,6 +624,100 @@ table{border-collapse:collapse;width:100%}
       </div>
     </div>
 
+
+    <!-- IOL / MACROSOMIA -->
+    <div class="edu-section" id="edu-iol">
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-icon" style="background:var(--gold-hl);color:var(--gold)">&#128197;</div>
+          <div class="section-title"><h2>Timing of Birth &amp; IOL for Macrosomia</h2><p>EFW thresholds, shoulder dystocia, OASI risk, gestation-specific decisions</p></div>
+          <svg class="section-toggle open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+        </div>
+        <div class="section-body open" style="padding:var(--sp6) var(--sp8)">
+
+          <p>The relationship between fetal size, gestational age, and pelvic floor injury is central to intrapartum risk management. As pregnancy advances beyond 38 weeks, the fetal head circumference grows approximately 5–7 mm per week and estimated fetal weight (EFW) increases by ~180–220 g/week (INTERGROWTH-21st; Papageorghiou et al. Lancet 2014). Each additional week at term therefore substantially raises the absolute probability of OASI, levator avulsion, and shoulder dystocia through the DeLancey capacity–demand mechanism.</p>
+          <p style="margin-top:var(--sp3)">For women with suspected macrosomia (EFW ≥4.0 kg or ≥4.5 kg), the <strong>Big Baby Trial</strong> (Groom et al. Lancet 2024) provides the highest-quality evidence that induction of labour at 38 weeks reduces perinatal morbidity — including shoulder dystocia, emergency caesarean section, and estimated composite perinatal harm — compared with expectant management at term. The trial enrolled 2,893 women and used EFW ≥4 kg by ultrasound as the threshold.</p>
+
+          <div class="callout ok" style="margin:var(--sp5) 0">
+            <h4>Big Baby Trial — Key Results (Groom et al. Lancet 2024)</h4>
+            <ul>
+              <li>IOL at 38 weeks vs expectant management at 40–41 weeks for EFW ≥4.0 kg</li>
+              <li>Shoulder dystocia: <strong>2.1% vs 3.9%</strong> (RR 0.54, 95% CI 0.35–0.83)</li>
+              <li>Emergency C/S: <strong>17% vs 21%</strong> (RR 0.83) — IOL did <em>not</em> increase C/S rate</li>
+              <li>OASI: Trend to reduction with IOL (absolute difference ~1–1.5%)</li>
+              <li>Perineal trauma requiring repair: reduced in IOL arm</li>
+              <li>No significant difference in maternal or neonatal serious adverse events</li>
+              <li>Conclusion: IOL at 38 weeks is safe and reduces composite perinatal harm for EFW ≥4 kg</li>
+            </ul>
+          </div>
+
+          <h3 style="font-size:var(--tx-sm);font-weight:700;margin:var(--sp6) 0 var(--sp3)">Shoulder Dystocia Risk by EFW and Gestation</h3>
+          <p style="font-size:var(--tx-sm);color:var(--text-muted);max-width:65ch;margin-bottom:var(--sp4)">Shoulder dystocia is a key driver of intrapartum morbidity and is associated with brachial plexus injury (Erb's palsy), hypoxic ischaemic encephalopathy, and severe perineal trauma in the mother. Risk rises sharply with EFW above 4.0 kg and gestational age above 40 weeks.</p>
+          <div id="iol-sd-arrays" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:var(--sp4);margin-bottom:var(--sp6)"></div>
+
+          <h3 style="font-size:var(--tx-sm);font-weight:700;margin:var(--sp6) 0 var(--sp3)">OASI Risk by Gestation at Birth (nulliparous SVB, EFW 3.5–4.0 kg)</h3>
+          <p style="font-size:var(--tx-sm);color:var(--text-muted);max-width:65ch;margin-bottom:var(--sp4)">Based on published head circumference growth curves and multiplicative OR modelling (Daly JO, UGSA 2023; INTERGROWTH-21st 2014).</p>
+          <div id="iol-oasi-arrays" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:var(--sp4);margin-bottom:var(--sp6)"></div>
+
+          <h3 style="font-size:var(--tx-sm);font-weight:700;margin:var(--sp6) 0 var(--sp3)">IOL Thresholds and Clinical Decision Framework</h3>
+          <div class="tw">
+            <table class="risk-table">
+              <thead>
+                <tr>
+                  <th>EFW (projected at birth)</th>
+                  <th>Gestation</th>
+                  <th>Shoulder Dystocia Risk</th>
+                  <th>OASI Risk (nullip SVB)</th>
+                  <th>Recommendation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>&lt;3.5 kg</td><td>Any term</td><td class="or-val">~0.5–1%</td><td class="or-val">~4–5%</td><td>Standard management</td></tr>
+                <tr><td>3.5–3.9 kg</td><td>38–40 weeks</td><td class="or-val">~1–2%</td><td class="or-val">~5–7%</td><td>Standard; discuss prevention bundle</td></tr>
+                <tr><td>3.5–3.9 kg</td><td>41–42 weeks</td><td class="or-val">~2–3%</td><td class="or-val">~7–9%</td><td>IOL for post-dates per standard guideline</td></tr>
+                <tr><td>≥4.0 kg</td><td>38 weeks</td><td class="or-val"><span class="risk-badge badge-mod">~2–3%</span></td><td class="or-val"><span class="risk-badge badge-mod">~8–10%</span></td><td><strong>Discuss IOL at 38 weeks</strong> — Big Baby Trial evidence</td></tr>
+                <tr><td>≥4.0 kg</td><td>40–41 weeks</td><td class="or-val"><span class="risk-badge badge-hi">~4–5%</span></td><td class="or-val"><span class="risk-badge badge-hi">~10–14%</span></td><td><strong>IOL recommended</strong>; counsel about C/S if AVB risk high</td></tr>
+                <tr><td>≥4.5 kg</td><td>38 weeks</td><td class="or-val"><span class="risk-badge badge-hi">~5–8%</span></td><td class="or-val"><span class="risk-badge badge-hi">~15–20%</span></td><td><strong>IOL at 38 weeks strongly recommended</strong>; elective C/S discussion warranted</td></tr>
+                <tr><td>≥4.5 kg</td><td>40+ weeks</td><td class="or-val"><span class="risk-badge badge-vhi">~8–12%</span></td><td class="or-val"><span class="risk-badge badge-vhi">~20–30%</span></td><td><strong>Elective C/S</strong> should be offered and documented</td></tr>
+                <tr><td>≥5.0 kg</td><td>Any</td><td class="or-val"><span class="risk-badge badge-vhi">&gt;15%</span></td><td class="or-val"><span class="risk-badge badge-vhi">&gt;30%</span></td><td><strong>Elective C/S</strong> — shoulder dystocia risk unacceptably high for SVB</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="font-size:.7rem;color:var(--text-muted);margin-top:var(--sp2)">Sources: Big Baby Trial (Groom et al.) Lancet 2024; INTERGROWTH-21st (Papageorghiou et al.) Lancet 2014; Daly JO UGSA 2023; RANZCOG C-Obs 22 (2021).</div>
+
+          <h3 style="font-size:var(--tx-sm);font-weight:700;margin:var(--sp6) 0 var(--sp3)">IOL at 38 weeks — Before &amp; After (Icon Array)</h3>
+          <p style="font-size:var(--tx-sm);color:var(--text-muted);max-width:65ch;margin-bottom:var(--sp4)">Effect of IOL at 38 weeks vs expectant management to 41 weeks on shoulder dystocia risk (EFW ≥4.0 kg, nulliparous).</p>
+          <div id="iol-before-after" style="max-width:560px"></div>
+
+          <h3 style="font-size:var(--tx-sm);font-weight:700;margin:var(--sp6) 0 var(--sp3)">EFW Estimation Methods &amp; Limitations</h3>
+          <div class="info-grid">
+            <div class="info-card">
+              <h4>Hadlock formula (most common)</h4>
+              <p>Uses BPD, HC, AC, FL. Systematic error of ±15–20% at the extremes. Tends to <em>underestimate</em> weight in large-for-gestational-age (LGA) fetuses — meaning true birth weight may exceed the EFW by 300–500 g in macrosomic fetuses. Clinicians should account for this when counselling.</p>
+            </div>
+            <div class="info-card">
+              <h4>Customised growth charts</h4>
+              <p>Adjust for maternal height, weight, ethnicity, and parity. More sensitive for detecting LGA in shorter or lighter women. GROW chart (Gardosi) recommended by RANZCOG for Australian populations. INTERGROWTH-21st provides international reference standards.</p>
+            </div>
+            <div class="info-card">
+              <h4>Clinical estimation (Leopold's)</h4>
+              <p>Clinical palpation significantly underestimates macrosomia — sensitivity only 40–50% for EFW &gt;4 kg. Ultrasound at 36 weeks is the standard for macrosomia screening.</p>
+            </div>
+            <div class="info-card">
+              <h4>GDM and macrosomia</h4>
+              <p>GDM (especially insulin-requiring) is associated with asymmetric macrosomia — larger abdominal circumference relative to head size — which specifically increases shoulder dystocia risk. The Hadlock formula uses AC in its model; good glycaemic control reduces AC growth velocity.</p>
+            </div>
+          </div>
+
+          <div class="callout warn" style="margin-top:var(--sp6)">
+            <h4>Key clinical message</h4>
+            <p>For nulliparous women with EFW ≥4.0 kg at the 36-week scan, a projected birth weight at 40–41 weeks of 4.4–4.8 kg places them in the highest-risk category for both OASI and shoulder dystocia. Discussion of IOL at 38 weeks — with shared decision-making documentation — is now supported by Level 1 evidence (Big Baby Trial, Lancet 2024). This does <em>not</em> increase the C/S rate and reduces composite perinatal harm.</p>
+          </div>
+          <p style="font-size:.7rem;color:var(--text-muted);margin-top:var(--sp3)">Sources: Groom et al. Lancet 2024; Papageorghiou et al. Lancet 2014; Daly JO UGSA 2023; Al-Qudah et al. 2026; RANZCOG C-Obs 22 (2021).</p>
+        </div>
+      </div>
+    </div>
+
     <!-- 6. Prior OASI -->
     <div class="edu-section" id="edu-prior-oasi">
       <div class="section-card">
@@ -748,6 +843,7 @@ table{border-collapse:collapse;width:100%}
         <div class="calc-group">
           <label class="calc-label">Estimated weight at birth</label>
           <div id="c-efw-display" class="calc-highlight">—</div>
+          <div id="c-iol-rec" style="margin-top:6px;font-size:.7rem;line-height:1.5;border-radius:6px;padding:6px 10px;display:none"></div>
         </div>
         <div class="calc-section-head">&#9898; Labour &amp; Birth</div>
         <div class="calc-group">
@@ -879,7 +975,7 @@ table{border-collapse:collapse;width:100%}
 </div>
 
 <footer class="page-footer">
-  <p>Pelvic Floor Risk Dashboard &mdash; For shared decision-making support only. Not a substitute for clinical advice.</p>
+  <p>Birth-related Pelvic Floor Risk Information Resource for Mothers and their Support Team &mdash; For shared decision-making support only. Not a substitute for clinical advice.</p>
   <p style="margin-top:var(--sp2)">Sources: AIHW 2023 &middot; Victorian PSPI 2022 &middot; Daly JO UGSA 2023 &middot; Packet et al. UOG 2023 &middot; UR-CHOICE &middot; Big Baby Trial 2024 &middot; RCOG 2015</p>
   <p style="margin-top:var(--sp2)"><a href="https://github.com/ideasth" target="_blank" rel="noopener">ideasth on GitHub</a></p>
 </footer>
@@ -1188,6 +1284,37 @@ function calcRisk(){
   var efwBirth=efw36+(weeksFrom36*200);
   var efwDisplay=document.getElementById('c-efw-display');
   if(efwDisplay) efwDisplay.textContent=efwBirth.toFixed(0)+' g ('+( efwBirth/1000).toFixed(2)+' kg) — projected at '+gest+' weeks';
+  // IOL recommendation
+  var iolRec=document.getElementById('c-iol-rec');
+  if(iolRec){
+    var iolMsg='', iolStyle='';
+    if(efwBirth>=5000){
+      iolMsg='&#9888;&#65039; <strong>EFW ≥5.0 kg:</strong> Elective C/S should be offered. Shoulder dystocia risk &gt;15%. RANZCOG C-Obs 22 (2021).';
+      iolStyle='background:#fee2e2;color:#991b1b;border:1px solid #fca5a5';
+    } else if(efwBirth>=4500 && gest>=40){
+      iolMsg='&#9888;&#65039; <strong>EFW ≥4.5 kg at ≥40 weeks:</strong> Elective C/S should be discussed. Shoulder dystocia ~10%. IOL at 38 weeks recommended (Big Baby Trial, Lancet 2024).';
+      iolStyle='background:#fee2e2;color:#991b1b;border:1px solid #fca5a5';
+    } else if(efwBirth>=4500){
+      iolMsg='&#9757;&#65039; <strong>EFW ≥4.5 kg:</strong> IOL at 38 weeks strongly recommended. Shoulder dystocia ~6–8%. Consider C/S discussion (Big Baby Trial, Lancet 2024).';
+      iolStyle='background:#fef3c7;color:#92400e;border:1px solid #fcd34d';
+    } else if(efwBirth>=4000 && gest>=41){
+      iolMsg='&#9888;&#65039; <strong>EFW ≥4.0 kg at ≥41 weeks:</strong> IOL recommended. Shoulder dystocia ~4–5%; OASI risk ~10–14%. (Big Baby Trial, Lancet 2024).';
+      iolStyle='background:#fef3c7;color:#92400e;border:1px solid #fcd34d';
+    } else if(efwBirth>=4000 && gest>=38){
+      iolMsg='&#128161; <strong>EFW ≥4.0 kg at 38 weeks:</strong> Discuss IOL now. Big Baby Trial (Lancet 2024) supports IOL at 38w — reduces shoulder dystocia (3.9% &#8594; 2.1%) without increasing C/S.';
+      iolStyle='background:#ecfdf5;color:#065f46;border:1px solid #6ee7b7';
+    } else if(efwBirth>=3800 && gest>=40){
+      iolMsg='&#128161; EFW 3.8–4.0 kg at ≥40 weeks: standard post-dates IOL guideline applies. Prevention bundle recommended for vaginal birth.';
+      iolStyle='background:var(--surface-offset);color:var(--text-muted);border:1px solid var(--border)';
+    }
+    if(iolMsg){
+      iolRec.style.display='block';
+      iolRec.style.cssText+=';'+iolStyle;
+      iolRec.innerHTML=iolMsg;
+    } else {
+      iolRec.style.display='none';
+    }
+  }
 
   // Robson group display
   var robsonText='';
@@ -1356,6 +1483,68 @@ function calcRisk(){
   });
 }
 
+
+// ═══════════════════════════════════════════════
+// IOL / MACROSOMIA ARRAYS
+// ═══════════════════════════════════════════════
+function drawIOLArrays(){
+  // Shoulder dystocia by EFW category
+  var sdData=[
+    {id:'sd-lt35', label:'EFW <3.5 kg (term)', pct:0.008, color:'var(--success)'},
+    {id:'sd-35', label:'EFW 3.5–3.9 kg (term)', pct:0.018, color:'var(--gold)'},
+    {id:'sd-40-38w', label:'EFW ≥4.0 kg at 38w', pct:0.025, color:'var(--orange)'},
+    {id:'sd-40-41w', label:'EFW ≥4.0 kg at 41w', pct:0.045, color:'var(--error)'},
+    {id:'sd-45-38w', label:'EFW ≥4.5 kg at 38w', pct:0.065, color:'var(--error)'},
+    {id:'sd-45-41w', label:'EFW ≥4.5 kg at 41w', pct:0.100, color:'#7f0000'}
+  ];
+  var sdGrid=document.getElementById('iol-sd-arrays');
+  if(sdGrid){
+    sdGrid.innerHTML='';
+    sdData.forEach(function(d){
+      var div=document.createElement('div');
+      div.style.cssText='background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--sp4);text-align:center';
+      div.innerHTML='<div style="font-size:var(--tx-xs);font-weight:700;color:var(--text);margin-bottom:var(--sp2)">'+d.label+'<br><span style="font-size:.65rem;font-weight:500;color:var(--text-muted)">Shoulder dystocia</span></div><div id="'+d.id+'"></div>';
+      sdGrid.appendChild(div);
+      renderIconArray(div.querySelector('#'+d.id), d.pct, {color:d.color,baseColor:'var(--surface-offset)'});
+    });
+  }
+
+  // OASI by gestation (nullip SVB, EFW 3.5–4.0 kg)
+  var oasiGest=[
+    {id:'og-37', label:'SVB at 37 weeks', pct:0.040, color:'var(--success)'},
+    {id:'og-38', label:'SVB at 38 weeks', pct:0.048, color:'var(--gold)'},
+    {id:'og-39', label:'SVB at 39 weeks', pct:0.056, color:'var(--orange)'},
+    {id:'og-40', label:'SVB at 40 weeks', pct:0.065, color:'var(--orange)'},
+    {id:'og-41', label:'SVB at 41 weeks', pct:0.077, color:'var(--error)'},
+    {id:'og-42', label:'SVB at 42 weeks', pct:0.092, color:'var(--error)'}
+  ];
+  var oasiGrid=document.getElementById('iol-oasi-arrays');
+  if(oasiGrid){
+    oasiGrid.innerHTML='';
+    oasiGest.forEach(function(d){
+      var div=document.createElement('div');
+      div.style.cssText='background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--sp4);text-align:center';
+      div.innerHTML='<div style="font-size:var(--tx-xs);font-weight:700;color:var(--text);margin-bottom:var(--sp2)">'+d.label+'<br><span style="font-size:.65rem;font-weight:500;color:var(--text-muted)">OASI risk</span></div><div id="'+d.id+'"></div>';
+      oasiGrid.appendChild(div);
+      renderIconArray(div.querySelector('#'+d.id), d.pct, {color:d.color,baseColor:'var(--surface-offset)'});
+    });
+  }
+
+  // Before/after IOL
+  var ba=document.getElementById('iol-before-after');
+  if(ba){
+    ba.innerHTML='<div class="ia-compare">'
+      +'<div class="ia-compare-item"><div class="ia-compare-label">Expectant management to 41 weeks<br><span style="font-size:.7rem;color:var(--text-muted)">EFW ≥4.0 kg, nulliparous</span></div>'
+      +'<div id="iol-ba-before"></div></div>'
+      +'<div style="display:flex;align-items:center;font-size:1.5rem;padding:0 4px">&#8594;</div>'
+      +'<div class="ia-compare-item"><div class="ia-compare-label">IOL at 38 weeks<br><span style="font-size:.7rem;color:var(--text-muted)">Big Baby Trial (Groom et al.) Lancet 2024</span></div>'
+      +'<div id="iol-ba-after"></div></div>'
+      +'</div>';
+    renderIconArray(document.getElementById('iol-ba-before'), 0.039, {color:'#dc2626',baseColor:'var(--surface-offset)'});
+    renderIconArray(document.getElementById('iol-ba-after'),  0.021, {color:'#16a34a',baseColor:'var(--surface-offset)'});
+  }
+}
+
 // ═══════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════
@@ -1364,6 +1553,7 @@ document.addEventListener('DOMContentLoaded',function(){
   updateDemoArray();
   drawBundleDemo();
   drawDashArrays();
+  drawIOLArrays();
   updatePrefSummary();
 });
 </script>
