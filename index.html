@@ -1135,7 +1135,7 @@ input, select, textarea { font-size: 16px !important; } /* Prevent iOS zoom on f
 
     <div class="calc-form" style="margin-bottom:var(--sp6);background:var(--primary-hl);border:2px solid var(--primary)">
       <h2 style="color:var(--primary);margin-bottom:var(--sp2)">&#128336; Stage of Pregnancy or Labour</h2>
-      <p style="font-size:var(--tx-sm);color:var(--text-muted);margin-bottom:var(--sp4)">Select your current situation. Clinical terms have a <button class="glossary-link" onclick="openGlossary('oasi')">&#128218; meaning</button> button alongside them.</p>
+      <p style="font-size:var(--tx-sm);color:var(--text-muted);margin-bottom:var(--sp4)">Select your current situation. Clinical terms have a <span class="glossary-link" onclick="openGlossary('oasi')" role="button" tabindex="0" aria-label="Glossary">&#128218; meaning</span> button alongside them.</p>
 
       <div class="form-group" style="max-width:580px;margin-bottom:var(--sp4)">
         <label for="f-preg-stage" style="font-weight:600">I am currently:</label>
@@ -1151,11 +1151,11 @@ input, select, textarea { font-size: 16px !important; } /* Prevent iOS zoom on f
 
       <!-- Sub-options: IOL indication (shown when antenatal_iol selected) -->
       <div id="iol-subopts" style="display:none;margin-bottom:var(--sp4);padding:var(--sp4);background:var(--surface);border-radius:var(--radius-md);border:1px solid var(--border)">
-        <label style="font-size:var(--tx-sm);font-weight:600;display:block;margin-bottom:var(--sp2)">
-          Reason for IOL: <button class="glossary-link" onclick="openGlossary('iog')">&#128218; What is IOL?</button>
-        </label>
+        <p style="font-size:var(--tx-sm);font-weight:600;display:block;margin-bottom:var(--sp2)">
+          Reason for IOL: <span class="glossary-link" onclick="openGlossary('iog')" role="button" tabindex="0" aria-label="What is IOL?">&#128218; What is IOL?</span>
+        </p>
         <div style="display:flex;flex-wrap:wrap;gap:var(--sp2)">
-          <button class="pref-toggle selected-threshold" data-iol="macrosomia" onclick="selectIOLReason(this)">Large baby (Macrosomia) <button class="glossary-link" style="margin-left:4px;font-size:10px" onclick="event.stopPropagation();openGlossary('macrosomia')">&#128218;</button></button>
+          <button class="pref-toggle selected-threshold" data-iol="macrosomia" onclick="selectIOLReason(this)">Large baby (Macrosomia)</button><span class="glossary-link" onclick="event.stopPropagation();openGlossary('macrosomia')" role="button" tabindex="0" aria-label="What is macrosomia?">&#128218;</span>
           <button class="pref-toggle" data-iol="post_dates">Post dates (≥41 weeks)</button>
           <button class="pref-toggle" data-iol="gdm">Gestational diabetes</button>
           <button class="pref-toggle" data-iol="other">Other indication</button>
@@ -1164,8 +1164,8 @@ input, select, textarea { font-size: 16px !important; } /* Prevent iOS zoom on f
         <div id="iol-macrosomia-panel" style="display:none;margin-top:var(--sp4);padding:var(--sp3);background:var(--surface-offset);border-radius:var(--radius-md);border-left:3px solid var(--warning)">
           <p style="font-size:var(--tx-sm);font-weight:700;color:var(--warning);margin-bottom:var(--sp2)">
             &#127381; Big Babies &amp; Timing of Birth
-            <button class="glossary-link" onclick="openGlossary('macrosomia')">&#128218; What is macrosomia?</button>
-            <button class="glossary-link" onclick="openGlossary('shoulder_dystocia')">&#128218; What is shoulder dystocia?</button>
+            <span class="glossary-link" onclick="openGlossary('macrosomia')" role="button" tabindex="0" aria-label="Glossary">&#128218; What is macrosomia?</span>
+            <span class="glossary-link" onclick="openGlossary('shoulder_dystocia')" role="button" tabindex="0" aria-label="Glossary">&#128218; What is shoulder dystocia?</span>
           </p>
           <p style="font-size:var(--tx-xs);color:var(--text-muted)">See the Big Babies &amp; Timing of Birth section in the calculator below — it shows shoulder dystocia risk by estimated fetal weight and the evidence for IOL at 38 weeks (Big Baby Trial 2023). Discuss your EFW result with your care team.</p>
         </div>
@@ -1179,12 +1179,12 @@ input, select, textarea { font-size: 16px !important; } /* Prevent iOS zoom on f
           <div style="padding:var(--sp3);background:var(--success-hl);border-radius:var(--radius-md);border:1px solid var(--success)">
             <p style="font-size:var(--tx-xs);font-weight:700;color:var(--success);margin-bottom:var(--sp1)">
               &#9989; Favourable position
-              <button class="glossary-link" onclick="openGlossary('oa')">&#128218;</button>
+              <span class="glossary-link" onclick="openGlossary('oa')" role="button" tabindex="0" aria-label="Glossary">&#128218;</span>
             </p>
             <ul style="font-size:var(--tx-xs);padding-left:var(--sp3);color:var(--text-muted);line-height:1.7">
               <li>Occipito-anterior (OA) — direct, left or right</li>
               <li>Head 2 cm or more below ischial spines
-                <button class="glossary-link" onclick="openGlossary('ischial')">&#128218;</button>
+                <span class="glossary-link" onclick="openGlossary('ischial')" role="button" tabindex="0" aria-label="Glossary">&#128218;</span>
               </li>
             </ul>
             <p style="font-size:var(--tx-xs);color:var(--success);margin-top:var(--sp2)">Lower risk for vacuum or forceps</p>
@@ -1193,20 +1193,20 @@ input, select, textarea { font-size: 16px !important; } /* Prevent iOS zoom on f
           <div style="padding:var(--sp3);background:var(--warning-hl);border-radius:var(--radius-md);border:1px solid var(--warning)">
             <p style="font-size:var(--tx-xs);font-weight:700;color:var(--warning);margin-bottom:var(--sp1)">
               &#9888;&#65039; Unfavourable position
-              <button class="glossary-link" onclick="openGlossary('op')">&#128218; OP</button>
-              <button class="glossary-link" onclick="openGlossary('ot')">&#128218; OT</button>
+              <span class="glossary-link" onclick="openGlossary('op')" role="button" tabindex="0" aria-label="Glossary">&#128218; OP</span>
+              <span class="glossary-link" onclick="openGlossary('ot')" role="button" tabindex="0" aria-label="Glossary">&#128218; OT</span>
             </p>
             <ul style="font-size:var(--tx-xs);padding-left:var(--sp3);color:var(--text-muted);line-height:1.7">
               <li>Occipito-transverse (OT)
-                <button class="glossary-link" onclick="openGlossary('ot')">&#128218;</button>
+                <span class="glossary-link" onclick="openGlossary('ot')" role="button" tabindex="0" aria-label="Glossary">&#128218;</span>
               </li>
               <li>Occipito-posterior (OP) — back to back
-                <button class="glossary-link" onclick="openGlossary('op')">&#128218;</button>
+                <span class="glossary-link" onclick="openGlossary('op')" role="button" tabindex="0" aria-label="Glossary">&#128218;</span>
               </li>
               <li>Head less than 2 cm below ischial spines</li>
             </ul>
             <p style="font-size:var(--tx-xs);color:var(--warning);margin-top:var(--sp2)">Higher chance of rotational birth
-              <button class="glossary-link" onclick="openGlossary('rotational')">&#128218;</button>
+              <span class="glossary-link" onclick="openGlossary('rotational')" role="button" tabindex="0" aria-label="Glossary">&#128218;</span>
               or caesarean</p>
           </div>
 
@@ -1236,7 +1236,7 @@ input, select, textarea { font-size: 16px !important; } /* Prevent iOS zoom on f
           <input type="number" id="f-age" placeholder="e.g. 32" min="16" max="55">
         </div>
         <div class="form-group">
-          <label for="f-parity">Parity <button class="glossary-link" onclick="openGlossary('instrumental')">&#128218; Assisted birth?</button></label>
+          <label for="f-parity">Parity</label><span class="glossary-link" role="button" tabindex="0" onclick="openGlossary('instrumental')">&#128218; Assisted birth?</span>
           <select id="f-parity">
             <option value="nullip">Nulliparous (first birth)</option>
             <option value="multip">Multiparous (previous vaginal birth)</option>
@@ -1273,7 +1273,7 @@ input, select, textarea { font-size: 16px !important; } /* Prevent iOS zoom on f
       </div>
       <div class="form-grid">
         <div class="form-group">
-          <label for="f-efw">Estimated Fetal Weight (grams) <button class="glossary-link" onclick="openGlossary('macrosomia')">&#128218; Large baby info</button></label>
+          <label for="f-efw">Estimated Fetal Weight (grams)</label><span class="glossary-link" role="button" tabindex="0" onclick="openGlossary('macrosomia')">&#128218; Large baby info</span>
           <input type="number" id="f-efw" placeholder="e.g. 3400" min="1500" max="6000">
         </div>
         <div class="form-group">
@@ -1291,7 +1291,7 @@ input, select, textarea { font-size: 16px !important; } /* Prevent iOS zoom on f
 
 
       <div style="margin:var(--sp6) 0 var(--sp4)">
-        <strong style="font-size:var(--tx-sm)">&#127381; Big Babies &amp; Timing of Birth</strong> <button class="glossary-link" onclick="openGlossary('macrosomia')">&#128218; What is macrosomia?</button> <button class="glossary-link" onclick="openGlossary('shoulder_dystocia')">&#128218; Shoulder dystocia?</button>
+        <strong style="font-size:var(--tx-sm)">&#127381; Big Babies &amp; Timing of Birth</strong> <span class="glossary-link" onclick="openGlossary('macrosomia')" role="button" tabindex="0" aria-label="Glossary">&#128218; What is macrosomia?</span> <span class="glossary-link" onclick="openGlossary('shoulder_dystocia')" role="button" tabindex="0" aria-label="Glossary">&#128218; Shoulder dystocia?</span>
       </div>
       <div style="background:var(--surface-offset);border-radius:var(--radius-lg);padding:var(--sp5);margin-bottom:var(--sp4);border:1px solid var(--border)">
         <p style="font-size:var(--tx-sm);color:var(--text-muted);margin-bottom:var(--sp3)">Babies estimated at ≥4 kg (macrosomia) have a higher rate of complications at birth including OASI, shoulder dystocia, and levator avulsion. Induction of labour at 38–39 weeks for suspected macrosomia is one strategy to reduce these risks.</p>
@@ -1362,7 +1362,7 @@ input, select, textarea { font-size: 16px !important; } /* Prevent iOS zoom on f
       </div>
       <div class="form-grid">
         <div class="form-group">
-          <label for="f-prev-oasi">Previous OASI (3rd/4th degree tear) <button class="glossary-link" onclick="openGlossary('oasi')">&#128218; What is OASI?</button></label>
+          <label for="f-prev-oasi">Previous OASI (3rd/4th degree tear)</label><span class="glossary-link" role="button" tabindex="0" onclick="openGlossary('oasi')">&#128218; What is OASI?</span>
           <select id="f-prev-oasi">
             <option value="none">No previous OASI</option>
             <option value="asymp">Previous OASI — asymptomatic, normal manometry, no defect</option>
@@ -1370,7 +1370,7 @@ input, select, textarea { font-size: 16px !important; } /* Prevent iOS zoom on f
           </select>
         </div>
         <div class="form-group">
-          <label for="f-perineum">Perineal body length (if known) <button class="glossary-link" onclick="openGlossary('oasi')">&#128218; Why does this matter?</button></label>
+          <label for="f-perineum">Perineal body length (if known)</label><span class="glossary-link" role="button" tabindex="0" onclick="openGlossary('oasi')">&#128218; Why does this matter?</span>
           <select id="f-perineum">
             <option value="unknown">Unknown</option>
             <option value="normal">≥2.5 cm (normal)</option>
@@ -1400,7 +1400,7 @@ input, select, textarea { font-size: 16px !important; } /* Prevent iOS zoom on f
           </select>
         </div>
         <div class="form-group">
-          <label for="f-op">Persistent Occiput Posterior (OP) at full dilatation <button class="glossary-link" onclick="openGlossary('op')">&#128218; What is OP?</button></label>
+          <label for="f-op">Persistent Occiput Posterior (OP) at full dilatation</label><span class="glossary-link" role="button" tabindex="0" onclick="openGlossary('op')">&#128218; What is OP?</span>
           <select id="f-op">
             <option value="no">No / Unknown</option>
             <option value="yes">Yes — persistent OP</option>
@@ -1555,13 +1555,13 @@ input, select, textarea { font-size: 16px !important; } /* Prevent iOS zoom on f
       <div class="section-card">
         <div class="section-header" onclick="toggleSection(this)" aria-expanded="false">
           <div class="section-icon" style="background:var(--warning-hl);color:var(--warning)">&#9888;&#65039;</div>
-          <div class="section-title"><h2>5. Risk Factors for OASI <button class="glossary-link" onclick="openGlossary('oasi')">&#128218; What is OASI?</button></h2><p>Antenatal and intrapartum factors — with odds ratios</p></div>
+          <div class="section-title"><h2>5. Risk Factors for OASI <span class="glossary-link" onclick="openGlossary('oasi')" role="button" tabindex="0" aria-label="Glossary">&#128218; What is OASI?</span></h2><p>Antenatal and intrapartum factors — with odds ratios</p></div>
           <svg class="section-toggle" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="section-body">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp6)">
             <div>
-              <h3 style="font-size:var(--tx-base);font-weight:700;margin-bottom:var(--sp3);color:var(--blue)">Antenatal Risk Factors <button class="glossary-link" onclick="openGlossary('levator')">&#128218; Levator avulsion?</button></h3>
+              <h3 style="font-size:var(--tx-base);font-weight:700;margin-bottom:var(--sp3);color:var(--blue)">Antenatal Risk Factors <span class="glossary-link" onclick="openGlossary('levator')" role="button" tabindex="0" aria-label="Glossary">&#128218; Levator avulsion?</span></h3>
               <table style="font-size:var(--tx-xs);width:100%;border-collapse:collapse">
                 <thead><tr style="background:var(--surface-offset)">
                   <th style="padding:var(--sp1) var(--sp2);text-align:left;border-bottom:1px solid var(--border)">Factor</th>
@@ -2080,7 +2080,7 @@ function updatePregnancyStage(val) {
     first_stage:
       'You are in the <strong>first stage of labour</strong>. Fill in what is known — especially onset of labour, epidural, and EFW. The calculator will show risks for all possible birth modes from this point.',
     second_stage_fav:
-      '<strong>Second stage — favourable position and descent.</strong> Your baby's head is in an anterior (OA) position and 2 cm or more below the ischial spines. This is a good position for birth. Risks for uncomplicated vacuum or forceps are shown alongside spontaneous birth and caesarean.',
+      '<strong>Second stage &#8212; favourable position and descent.</strong> Your baby\'s head is in an anterior (OA) position and 2 cm or more below the ischial spines. This is a good position for birth. Risks for uncomplicated vacuum or forceps are shown alongside spontaneous birth and caesarean.',
     second_stage_unfav:
       '<strong>Second stage — unfavourable position or high station.</strong> Your baby may be in an OP or OT position, or the head is less than 2 cm below the ischial spines. This increases the chance of a rotational assisted birth or emergency caesarean at full dilatation. Risks for all options are shown.'
   };
@@ -2485,6 +2485,17 @@ var glossaryTerms = {
     img: null
   }
 };
+
+// Keyboard support for glossary spans
+document.addEventListener('keydown', function(e) {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('glossary-link')) {
+    e.preventDefault();
+    var onclick = e.target.getAttribute('onclick');
+    if (onclick) {
+      try { (new Function(onclick))(); } catch(err) {}
+    }
+  }
+});
 
 function openGlossary(termKey) {
   var t = glossaryTerms[termKey];
